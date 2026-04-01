@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psicóloga Luz Adriana — Tu Camino Hacia el Equilibrio</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --crema:     #F5F0E8;
+  --crema2:    #EDE6D6;
+  --teal:      #2A7B6F;
+  --teal-claro:#4AA898;
+  --teal-suave:#D4EAE6;
+  --dorado:    #C8A45A;
+  --dorado-claro:#F0DFA8;
+  --cafe:      #7A5C3A;
+  --cafe-claro:#C4A07A;
+  --blanco:    #FDFAF4;
+  --texto:     #3D3025;
+  --texto-2:   #6B5940;
+  --sombra:    rgba(42,123,111,0.12);
+  --sombra2:   rgba(200,164,90,0.18);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Quicksand',sans-serif;
+  background:var(--blanco);
+  color:var(--texto);
+  font-size:18px;
+  overflow-x:hidden;
+}
+
+/* ── FONDO TEXTURA ── */
+body::before{
+  content:'';
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:
+    radial-gradient(ellipse at 15% 20%, rgba(42,123,111,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(200,164,90,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(245,240,232,0.5) 0%, transparent 80%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(253,250,244,0.96);
+  backdrop-filter:blur(14px);
+  padding:0 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--dorado-claro);
+  box-shadow:0 2px 24px var(--sombra);
+  height:72px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:14px;
+  text-decoration:none;
+}
+.nav-logo-img{
+  width:48px;height:48px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-claro));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  box-shadow:0 4px 12px var(--sombra);
+  overflow:hidden;
+  flex-shrink:0;
+}
+.nav-logo-text{
+  font-family:'Lora',serif;
+  line-height:1.2;
+}
+.nav-logo-text strong{display:block;font-size:1.05rem;color:var(--teal);font-weight:700;}
+.nav-logo-text span{font-size:0.78rem;color:var(--cafe-claro);font-style:italic;font-weight:500;}
+.nav-links{display:flex;gap:10px;flex-wrap:wrap;}
+.nav-links a{
+  text-decoration:none;color:var(--teal);
+  font-weight:700;font-size:0.88rem;
+  padding:8px 18px;border-radius:50px;
+  border:2px solid transparent;
+  transition:all 0.22s;
+  letter-spacing:0.02em;
+}
+.nav-links a:hover{background:var(--teal);color:white;border-color:var(--teal);}
+.nav-links a.cta-nav{background:var(--teal);color:white;}
+.nav-links a.cta-nav:hover{background:var(--teal-claro);transform:translateY(-2px);box-shadow:0 6px 18px var(--sombra);}
+
+/* ── HÉROE ── */
+.hero{
+  min-height:94vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg, var(--crema) 0%, var(--blanco) 60%, var(--teal-suave) 100%);
+  padding:60px 24px;
+  z-index:1;
+}
+/* ramas decorativas SVG inline */
+.hero-rama{
+  position:absolute;
+  opacity:0.12;
+  pointer-events:none;
+}
+.hero-rama.izq{left:-40px;bottom:-20px;width:420px;}
+.hero-rama.der{right:-40px;top:0;width:360px;transform:scaleX(-1);}
+
+.hero-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;
+  max-width:1100px;width:100%;
+}
+.hero-logo-grande{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+}
+.hero-logo-circulo{
+  width:360px;height:360px;border-radius:50%;
+  background:linear-gradient(135deg,var(--crema2),var(--teal-suave));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 24px 80px var(--sombra), 0 0 0 16px rgba(42,123,111,0.06);
+  position:relative;
+  animation:flotar 7s ease-in-out infinite;
+}
+@keyframes flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+
+.hero-logo-circulo .logo-img-container{
+  width:300px;height:300px;border-radius:50%;overflow:hidden;
+  border:4px solid rgba(42,123,111,0.2);
+}
+.logo-img-container img{
+  width:100%;height:100%;object-fit:cover;
+  border-radius:50%;
+}
+
+/* Mariposa flotante */
+.mariposa{
+  position:absolute;top:-20px;right:10px;font-size:2rem;
+  animation:volar 4s ease-in-out infinite;
+}
+@keyframes volar{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-20px) rotate(10deg)}}
+
+.hero-texto{z-index:2;}
+.hero-over{
+  display:inline-block;
+  font-size:0.82rem;font-weight:800;letter-spacing:0.15em;
+  color:var(--teal);text-transform:uppercase;
+  background:var(--teal-suave);padding:6px 18px;border-radius:50px;
+  margin-bottom:20px;border:1.5px solid rgba(42,123,111,0.2);
+}
+.hero-texto h1{
+  font-family:'Lora',serif;
+  font-size:clamp(2rem,4.5vw,3.4rem);
+  color:var(--texto);line-height:1.18;
+  margin-bottom:12px;
+}
+.hero-texto h1 em{color:var(--teal);font-style:italic;}
+.hero-texto .slogan{
+  font-size:1.15rem;color:var(--texto-2);
+  font-style:italic;margin-bottom:10px;
+  font-family:'Lora',serif;font-weight:500;
+}
+.hero-texto .descripcion{
+  font-size:1.05rem;line-height:1.8;color:var(--texto-2);
+  margin-bottom:34px;font-weight:600;
+  max-width:500px;
+}
+.hero-emojis-row{
+  display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;
+}
+.hero-badge{
+  background:white;border:2px solid var(--dorado-claro);
+  padding:8px 16px;border-radius:50px;
+  font-size:0.88rem;font-weight:700;color:var(--cafe);
+  box-shadow:0 3px 12px var(--sombra2);
+}
+.btn-hero{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--teal),var(--teal-claro));
+  color:white;padding:18px 44px;border-radius:60px;
+  font-family:'Quicksand',sans-serif;font-size:1.15rem;font-weight:800;
+  text-decoration:none;border:none;cursor:pointer;
+  box-shadow:0 10px 40px rgba(42,123,111,0.35);
+  transition:transform 0.25s,box-shadow 0.25s;
+  letter-spacing:0.03em;margin-right:14px;
+}
+.btn-hero:hover{transform:translateY(-5px);box-shadow:0 18px 50px rgba(42,123,111,0.4);}
+.btn-hero-2{
+  display:inline-block;
+  background:transparent;
+  color:var(--teal);padding:18px 32px;border-radius:60px;
+  font-family:'Quicksand',sans-serif;font-size:1.05rem;font-weight:700;
+  text-decoration:none;border:2px solid var(--teal);cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-hero-2:hover{background:var(--teal-suave);}
+
+/* ── SECCIONES GENERALES ── */
+section{padding:90px 24px;position:relative;z-index:1;}
+.contenedor{max-width:1100px;margin:0 auto;}
+.sec-label{
+  display:inline-block;font-size:0.8rem;font-weight:800;
+  letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--teal);background:var(--teal-suave);
+  padding:5px 16px;border-radius:50px;margin-bottom:16px;
+  border:1.5px solid rgba(42,123,111,0.15);
+}
+.sec-titulo{
+  font-family:'Lora',serif;
+  font-size:clamp(1.8rem,3.5vw,2.6rem);
+  color:var(--texto);margin-bottom:14px;line-height:1.22;
+}
+.sec-titulo em{color:var(--teal);font-style:italic;}
+.sec-subtitulo{
+  font-size:1.05rem;line-height:1.8;color:var(--texto-2);
+  font-weight:600;max-width:640px;
+}
+.linea{
+  width:60px;height:4px;border-radius:8px;
+  background:linear-gradient(90deg,var(--teal),var(--dorado));
+  margin:18px 0 40px;
+}
+.linea.centrada{margin:18px auto 40px;}
+.centrar{text-align:center;}
+.centrar .sec-subtitulo{margin:0 auto;}
+
+/* ── HISTORIA ── */
+#historia{background:var(--crema);}
+.historia-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+}
+.historia-visual{
+  position:relative;display:flex;justify-content:center;
+}
+.historia-img-wrap{
+  width:100%;max-width:440px;
+  border-radius:32px;overflow:hidden;
+  background:linear-gradient(135deg,var(--teal-suave),var(--dorado-claro));
+  height:420px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 24px 70px var(--sombra);
+  position:relative;
+}
+.historia-img-wrap img{
+  width:100%;height:100%;object-fit:cover;
+}
+.historia-img-placeholder{
+  font-size:9rem;opacity:0.7;
+  animation:flotar 8s ease-in-out infinite;
+}
+.historia-decor{
+  position:absolute;bottom:-20px;right:-20px;
+  width:120px;height:120px;border-radius:50%;
+  background:var(--dorado-claro);opacity:0.6;z-index:-1;
+}
+.historia-decor2{
+  position:absolute;top:-16px;left:-16px;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--teal-suave);z-index:-1;
+}
+.historia-texto p{
+  font-size:1.02rem;line-height:1.85;color:var(--texto-2);
+  margin-bottom:16px;font-weight:600;
+}
+.historia-texto p strong{color:var(--teal);font-weight:800;}
+.chips-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+.chip{
+  background:white;border:2px solid var(--teal-suave);
+  color:var(--teal);padding:6px 16px;border-radius:50px;
+  font-size:0.88rem;font-weight:700;
+  box-shadow:0 2px 8px var(--sombra);
+}
+.chip.dorado{border-color:var(--dorado-claro);color:var(--cafe);}
+
+/* ── PROCESO ── */
+#proceso{background:white;}
+.pasos-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:24px;position:relative;
+}
+/* línea conectora */
+.pasos-grid::before{
+  content:'';
+  position:absolute;top:48px;left:calc(12.5% + 24px);
+  width:calc(75% - 48px);height:3px;
+  background:linear-gradient(90deg,var(--teal-suave),var(--dorado-claro));
+  z-index:0;border-radius:4px;
+}
+.paso-card{
+  background:white;border-radius:24px;padding:36px 24px;
+  text-align:center;
+  border:2px solid var(--crema2);
+  transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s;
+  position:relative;z-index:1;
+}
+.paso-card:hover{transform:translateY(-10px);box-shadow:0 20px 60px var(--sombra);border-color:var(--teal-suave);}
+.paso-num{
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--teal-claro));
+  color:white;font-size:1.5rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  box-shadow:0 6px 20px var(--sombra);
+  font-family:'Lora',serif;
+}
+.paso-emoji{font-size:2.5rem;margin-bottom:14px;display:block;}
+.paso-card h3{font-size:1.1rem;font-weight:800;color:var(--texto);margin-bottom:10px;}
+.paso-card p{font-size:0.92rem;line-height:1.7;color:var(--texto-2);}
+
+/* ── MÉTODOS ── */
+#metodos{background:var(--crema);}
+.metodos-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+}
+.metodo-card{
+  background:white;border-radius:24px;padding:36px 28px;
+  border-left:5px solid var(--teal);
+  box-shadow:0 6px 32px var(--sombra);
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+.metodo-card:nth-child(2n){border-left-color:var(--dorado);}
+.metodo-card:hover{transform:translateY(-8px);box-shadow:0 18px 50px var(--sombra);}
+.metodo-icon{font-size:3rem;margin-bottom:16px;display:block;}
+.metodo-card h3{font-size:1.15rem;font-weight:800;color:var(--texto);margin-bottom:10px;}
+.metodo-card p{font-size:0.95rem;line-height:1.75;color:var(--texto-2);}
+.metodo-tag{
+  display:inline-block;margin-top:14px;
+  background:var(--teal-suave);color:var(--teal);
+  padding:4px 14px;border-radius:50px;font-size:0.82rem;font-weight:800;
+}
+.metodo-card:nth-child(2n) .metodo-tag{background:var(--dorado-claro);color:var(--cafe);}
+
+/* ── FORMULARIOS ── */
+.formas-section{
+  padding:90px 24px;
+  background:linear-gradient(160deg,#1e5c52 0%,#2A7B6F 60%,#1a4a41 100%);
+  position:relative;overflow:hidden;z-index:1;
+}
+.formas-section::before{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:
+    radial-gradient(ellipse at 10% 40%,rgba(200,164,90,0.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 90% 60%,rgba(245,240,232,0.08) 0%,transparent 50%);
+  pointer-events:none;
+}
+.formas-section .sec-label{background:rgba(255,255,255,0.12);color:var(--dorado-claro);border-color:rgba(200,164,90,0.3);}
+.formas-section .sec-titulo{color:white;}
+.formas-section .sec-titulo em{color:var(--dorado-claro);}
+.formas-section .sec-subtitulo{color:rgba(255,255,255,0.72);}
+.formas-section .linea.centrada{background:linear-gradient(90deg,var(--dorado-claro),var(--teal-suave));}
+
+.tabs-wrap{max-width:740px;margin:0 auto;position:relative;z-index:2;}
+.tabs{
+  display:flex;background:rgba(255,255,255,0.1);
+  border-radius:50px;padding:6px;margin-bottom:36px;gap:6px;
+  border:1.5px solid rgba(255,255,255,0.12);
+}
+.tab-btn{
+  flex:1;padding:14px 20px;border:none;border-radius:50px;
+  font-family:'Quicksand',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:all 0.3s;
+  color:rgba(255,255,255,0.65);background:transparent;
+}
+.tab-btn.activo{
+  background:white;color:var(--teal);
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);
+}
+.tab-content{display:none;}
+.tab-content.activo{display:block;animation:aparecer 0.4s ease;}
+@keyframes aparecer{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.form-card{
+  background:var(--blanco);border-radius:28px;padding:48px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.25);
+}
+.form-card h3{
+  font-family:'Lora',serif;font-size:1.7rem;
+  color:var(--texto);margin-bottom:8px;
+}
+.form-desc{color:var(--texto-2);margin-bottom:30px;font-size:0.98rem;font-weight:600;}
+.form-group{margin-bottom:22px;}
+.form-group label{
+  display:block;font-weight:800;color:var(--texto);
+  margin-bottom:8px;font-size:0.95rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea{
+  width:100%;padding:14px 20px;
+  border:2px solid var(--crema2);border-radius:14px;
+  font-family:'Quicksand',sans-serif;font-size:0.98rem;
+  color:var(--texto);background:white;
+  transition:border-color 0.2s,box-shadow 0.2s;outline:none;
+  font-weight:600;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+  border-color:var(--teal);
+  box-shadow:0 0 0 4px rgba(42,123,111,0.12);
+}
+.form-group textarea{min-height:110px;resize:vertical;}
+.form-group select{appearance:none;cursor:pointer;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.btn-form{
+  width:100%;padding:16px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-claro));
+  color:white;border:none;border-radius:14px;
+  font-family:'Quicksand',sans-serif;font-size:1.1rem;font-weight:900;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  letter-spacing:0.03em;margin-top:6px;
+}
+.btn-form:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(42,123,111,0.4);}
+
+.mensaje-exito{display:none;text-align:center;padding:44px 24px;animation:aparecer 0.5s ease;}
+.exito-icono{font-size:5rem;margin-bottom:16px;animation:flotar 2s infinite;}
+.mensaje-exito h3{font-family:'Lora',serif;font-size:1.8rem;color:var(--teal);margin-bottom:12px;}
+.mensaje-exito p{font-size:1rem;color:var(--texto-2);font-weight:600;line-height:1.7;}
+
+/* ── STATS FRANJA ── */
+.stats-franja{
+  background:white;padding:60px 24px;
+  border-top:2px solid var(--crema2);border-bottom:2px solid var(--crema2);
+  z-index:1;position:relative;
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:24px;max-width:900px;margin:0 auto;text-align:center;
+}
+.stat-item{}
+.stat-num{
+  font-family:'Lora',serif;font-size:2.8rem;font-weight:700;
+  color:var(--teal);display:block;line-height:1;margin-bottom:8px;
+}
+.stat-label{font-size:0.92rem;font-weight:700;color:var(--texto-2);}
+
+/* ── TESTIMONIOS ── */
+#testimonios{background:white;}
+.testimonios-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+}
+.test-card{
+  background:var(--crema);border-radius:24px;padding:36px;
+  border:2px solid var(--crema2);
+  transition:transform 0.3s,box-shadow 0.3s;
+  position:relative;
+}
+.test-card:hover{transform:translateY(-8px);box-shadow:0 18px 50px var(--sombra);}
+.test-comillas{
+  font-size:3.5rem;color:var(--teal);opacity:0.25;
+  line-height:1;margin-bottom:6px;font-family:Georgia,serif;
+}
+.test-estrellas{color:var(--dorado);font-size:1rem;margin-bottom:14px;}
+.test-card p{font-size:0.97rem;line-height:1.78;color:var(--texto-2);font-weight:600;margin-bottom:22px;}
+.test-autor{display:flex;align-items:center;gap:14px;}
+.test-avatar{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--teal-claro));
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+  flex-shrink:0;
+}
+.test-info strong{display:block;font-weight:800;color:var(--texto);font-size:0.95rem;}
+.test-info span{font-size:0.82rem;color:var(--teal-claro);font-weight:700;}
+.test-badge{
+  position:absolute;top:20px;right:20px;
+  background:var(--teal-suave);color:var(--teal);
+  font-size:0.75rem;font-weight:800;padding:3px 10px;border-radius:50px;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:linear-gradient(160deg,#1a3d38,var(--texto));
+  color:white;padding:60px 24px 36px;
+  position:relative;z-index:1;
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;
+}
+.footer-marca .footer-logo-name{
+  font-family:'Lora',serif;font-size:1.6rem;color:white;
+  margin-bottom:6px;font-weight:700;
+}
+.footer-marca .footer-slogan{
+  color:rgba(255,255,255,0.55);font-style:italic;
+  font-size:0.92rem;margin-bottom:20px;font-weight:500;
+}
+.footer-marca p{color:rgba(255,255,255,0.65);font-size:0.9rem;line-height:1.75;font-weight:600;}
+.footer-col h4{
+  color:var(--dorado-claro);font-size:0.85rem;font-weight:800;
+  letter-spacing:0.1em;text-transform:uppercase;margin-bottom:18px;
+}
+.footer-col a{
+  display:block;text-decoration:none;color:rgba(255,255,255,0.7);
+  font-size:0.92rem;font-weight:600;margin-bottom:10px;
+  transition:color 0.2s;
+}
+.footer-col a:hover{color:var(--dorado-claro);}
+.footer-bottom{
+  max-width:1100px;margin:40px auto 0;
+  padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  font-size:0.82rem;color:rgba(255,255,255,0.4);font-weight:600;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  nav{padding:0 18px;height:auto;padding:12px 18px;}
+  .nav-links a{font-size:0.78rem;padding:6px 12px;}
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px;}
+  .hero-logo-circulo{width:260px;height:260px;}
+  .hero-logo-circulo .logo-img-container{width:220px;height:220px;}
+  .hero-texto .descripcion{margin:0 auto 28px;}
+  .historia-grid{grid-template-columns:1fr;}
+  .historia-img-wrap{height:240px;font-size:6rem;}
+  .pasos-grid{grid-template-columns:1fr 1fr;}
+  .pasos-grid::before{display:none;}
+  .metodos-grid{grid-template-columns:1fr 1fr;}
+  .testimonios-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .footer-inner{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .form-card{padding:28px 20px;}
+}
+@media(max-width:520px){
+  .pasos-grid{grid-template-columns:1fr;}
+  .metodos-grid{grid-template-columns:1fr;}
+  .hero-logo-circulo{width:220px;height:220px;}
+  .hero-logo-circulo .logo-img-container{width:180px;height:180px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-img">🧠</div>
+    <div class="nav-logo-text">
+      <strong>Luz Adriana</strong>
+      <span>Psicóloga · Tu equilibrio</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#historia">👩‍⚕️ Quién soy</a>
+    <a href="#proceso">🗺️ Proceso</a>
+    <a href="#metodos">🧠 Métodos</a>
+    <a href="#testimonios">⭐ Voces</a>
+    <a href="#citas" class="cta-nav">📅 Agendar cita</a>
+  </div>
+</nav>
+
+<!-- ════ HÉROE ════ -->
+<section class="hero">
+  <!-- Ramas decorativas estilo imagen -->
+  <svg class="hero-rama izq" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40 380 C80 300, 120 260, 100 180 C90 130, 60 100, 80 60" stroke="#2A7B6F" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M100 220 C140 190, 180 170, 200 130" stroke="#2A7B6F" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M90 280 C60 260, 30 250, 10 220" stroke="#C8A45A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M80 160 C110 140, 140 120, 150 90" stroke="#2A7B6F" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M90 160 C70 130, 50 110, 40 80" stroke="#C8A45A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </svg>
+  <svg class="hero-rama der" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40 380 C80 300, 120 260, 100 180 C90 130, 60 100, 80 60" stroke="#2A7B6F" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M100 220 C140 190, 180 170, 200 130" stroke="#2A7B6F" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M90 280 C60 260, 30 250, 10 220" stroke="#C8A45A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M80 160 C110 140, 140 120, 150 90" stroke="#2A7B6F" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </svg>
+
+  <div class="hero-inner">
+    <!-- Logo grande (imagen del usuario) -->
+    <div class="hero-logo-grande">
+      <div class="hero-logo-circulo">
+        <div class="logo-img-container">
+          <img src="/mnt/user-data/uploads/1773869013874_Quiero_que_le_202603181621.png" alt="Psicóloga Luz Adriana — Equilibrio entre mente y corazón" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:7rem;">🧠❤️</div>
+        </div>
+        <div class="mariposa">🦋</div>
+      </div>
+    </div>
+    <!-- Texto -->
+    <div class="hero-texto">
+      <div class="hero-over">🌿 Tu camino hacia el equilibrio</div>
+      <h1>Psicóloga<br><em>Luz Adriana</em></h1>
+      <p class="slogan">"Encontrando el equilibrio entre mente y corazón"</p>
+      <p class="descripcion">
+        Psicóloga reconocida a nivel nacional 🇨🇴 con más de 15 años ayudando a personas de todas las edades 
+        — desde niños hasta abuelitos — a encontrar su bienestar y equilibrio interior. 🌱
+      </p>
+      <div class="hero-emojis-row">
+        <span class="hero-badge">🏆 +3.000 pacientes</span>
+        <span class="hero-badge">📍 Nivel Nacional</span>
+        <span class="hero-badge">💻 Virtual y presencial</span>
+      </div>
+      <a href="#citas" class="btn-hero">📅 Agendar mi cita</a>
+      <a href="#historia" class="btn-hero-2">Conocerme →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ STATS ════ -->
+<div class="stats-franja">
+  <div class="stats-grid">
+    <div class="stat-item reveal">
+      <span class="stat-num">15+</span>
+      <span class="stat-label">Años de experiencia 🎓</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <span class="stat-num">3.000+</span>
+      <span class="stat-label">Pacientes atendidos 🤗</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <span class="stat-num">32</span>
+      <span class="stat-label">Ciudades del país 🇨🇴</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <span class="stat-num">98%</span>
+      <span class="stat-label">Pacientes satisfechos ⭐</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ HISTORIA ════ -->
+<section id="historia">
+  <div class="contenedor">
+    <div class="historia-grid">
+      <div class="historia-visual reveal">
+        <div class="historia-img-wrap">
+          <img src="/mnt/user-data/uploads/1773869013874_Quiero_que_le_202603181621.png" alt="Logo Psicóloga Luz Adriana" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <div class="historia-img-placeholder" style="display:none">🌻</div>
+        </div>
+        <div class="historia-decor"></div>
+        <div class="historia-decor2"></div>
+      </div>
+      <div class="historia-texto reveal reveal-delay-1">
+        <div class="sec-label">👩‍⚕️ Mi historia</div>
+        <h2 class="sec-titulo">¿Quién es<br><em>Luz Adriana</em>?</h2>
+        <div class="linea"></div>
+        <p>
+          Desde muy joven sentí que mi propósito era <strong>escuchar, entender y ayudar</strong>. 
+          Hoy, después de más de 15 años de trayectoria, puedo decir que cada persona que llega 
+          a mi consultorio me recuerda por qué elegí esta profesión. 💜
+        </p>
+        <p>
+          Soy psicóloga graduada con <strong>Maestría en Terapia Cognitivo-Conductual</strong> y 
+          estudios de especialización en psicología infantil y adultos mayores. He trabajado con 
+          instituciones de salud en más de 32 ciudades del país. 🇨🇴
+        </p>
+        <p>
+          Mi consultorio es como un árbol fuerte: un lugar donde puedes apoyarte, 
+          crecer y florecer sin importar tu edad. 🌳 
+          Trabajo con <strong>niños desde los 4 años</strong> y adultos hasta los 90. 
+          ¡Nunca es demasiado pronto ni demasiado tarde!
+        </p>
+        <div class="chips-row">
+          <span class="chip">🎓 Maestría TCC</span>
+          <span class="chip">👶 Psicología infantil</span>
+          <span class="chip">👴 Adultos mayores</span>
+          <span class="chip dorado">🏆 Reconocida nacional</span>
+          <span class="chip dorado">💻 Sesiones virtuales</span>
+          <span class="chip">🇨🇴 32 ciudades</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ PROCESO ════ -->
+<section id="proceso">
+  <div class="contenedor">
+    <div class="centrar reveal">
+      <div class="sec-label">🗺️ Paso a paso</div>
+      <h2 class="sec-titulo">¿Cómo funciona? <em>¡Es muy fácil!</em></h2>
+      <div class="linea centrada"></div>
+      <p class="sec-subtitulo">Como subir una escalera con peldaños claros. ¡Tú solo tienes que dar el primer paso! 👣</p>
+    </div>
+    <br><br>
+    <div class="pasos-grid">
+      <div class="paso-card reveal">
+        <div class="paso-num">1</div>
+        <span class="paso-emoji">📝</span>
+        <h3>Creas tu cuenta</h3>
+        <p>Escribe tu nombre, teléfono y correo. ¡Como registrarte en una app nueva! Solo 2 minutitos ⏱️</p>
+      </div>
+      <div class="paso-card reveal reveal-delay-1">
+        <div class="paso-num">2</div>
+        <span class="paso-emoji">📅</span>
+        <h3>Agendas tu cita</h3>
+        <p>Escoge el día y la hora que más te convenga. ¡Hay mañana, tarde y noche disponibles! 🌤️🌙</p>
+      </div>
+      <div class="paso-card reveal reveal-delay-2">
+        <div class="paso-num">3</div>
+        <span class="paso-emoji">🤝</span>
+        <h3>Nos conocemos</h3>
+        <p>En la primera sesión me cuentas cómo te sientes. No hay respuestas malas. Todo es con confianza 🌿</p>
+      </div>
+      <div class="paso-card reveal reveal-delay-3">
+        <div class="paso-num">4</div>
+        <span class="paso-emoji">🌱</span>
+        <h3>¡Creces y floreces!</h3>
+        <p>Poco a poco, te sientes más fuerte y tranquilo. Como una planta con agua y sol todos los días ☀️</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ MÉTODOS ════ -->
+<section id="metodos">
+  <div class="contenedor">
+    <div class="centrar reveal">
+      <div class="sec-label">🧠 Herramientas de trabajo</div>
+      <h2 class="sec-titulo">¿Cómo te ayudo? <em>Mis métodos</em></h2>
+      <div class="linea centrada"></div>
+      <p class="sec-subtitulo">
+        Uso diferentes herramientas según cada persona. ¡Como un jardín que necesita cuidados especiales para cada flor! 🌸
+      </p>
+    </div>
+    <br><br>
+    <div class="metodos-grid">
+      <div class="metodo-card reveal">
+        <span class="metodo-icon">🗣️</span>
+        <h3>Terapia Cognitivo-Conductual</h3>
+        <p>Hablamos sobre lo que piensas y cómo te sientes. Cambiamos los pensamientos tristes por pensamientos más fuertes y bonitos. 💭</p>
+        <span class="metodo-tag">Para todas las edades</span>
+      </div>
+      <div class="metodo-card reveal reveal-delay-1">
+        <span class="metodo-icon">🎨</span>
+        <h3>Terapia con Arte y Juego</h3>
+        <p>Para niños: dibujamos, pintamos y jugamos para entender las emociones. ¡A veces un dibujo dice más que mil palabras! 🖍️</p>
+        <span class="metodo-tag">Ideal para niños</span>
+      </div>
+      <div class="metodo-card reveal reveal-delay-2">
+        <span class="metodo-icon">🧘</span>
+        <h3>Relajación y Mindfulness</h3>
+        <p>Aprendemos a respirar despacio cuando estamos nerviosos. Como soplar una vela muy suavemente. 🕯️ ¡El cuerpo aprende a calmarse!</p>
+        <span class="metodo-tag">Reduce el estrés</span>
+      </div>
+      <div class="metodo-card reveal">
+        <span class="metodo-icon">👨‍👩‍👧‍👦</span>
+        <h3>Terapia Familiar</h3>
+        <p>Toda la familia viene junta. Porque cuando alguien en casa necesita ayuda, todos pueden aprender a apoyarse mejor. 🏠❤️</p>
+        <span class="metodo-tag">Toda la familia</span>
+      </div>
+      <div class="metodo-card reveal reveal-delay-1">
+        <span class="metodo-icon">💻</span>
+        <h3>Sesiones Virtuales</h3>
+        <p>Desde tu casa por videollamada. ¡Perfecto para personas mayores o mamás ocupadas! Igual de efectivo que en persona. 📱</p>
+        <span class="metodo-tag">Desde casa</span>
+      </div>
+      <div class="metodo-card reveal reveal-delay-2">
+        <span class="metodo-icon">📖</span>
+        <h3>Narrativa y Cuentos</h3>
+        <p>Usamos historias para entender nuestras emociones. A veces los personajes de un cuento nos ayudan a entendernos a nosotros mismos. 📚</p>
+        <span class="metodo-tag">Niños y adultos</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FORMULARIOS ════ -->
+<div class="formas-section" id="citas">
+  <div class="contenedor">
+    <div class="centrar" style="position:relative;z-index:2;">
+      <div class="sec-label">✨ Da el primer paso</div>
+      <h2 class="sec-titulo">¡<em>Empieza hoy</em> tu camino!</h2>
+      <div class="linea centrada"></div>
+      <p class="sec-subtitulo">Regístrate o agenda tu cita. Es rápido, sencillo y el primer paso es siempre el más importante 🌿</p>
+    </div>
+    <br><br>
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab-btn activo" onclick="cambiarTab('registro',this)">👤 Crear mi cuenta</button>
+        <button class="tab-btn" onclick="cambiarTab('cita',this)">📅 Agendar cita</button>
+      </div>
+
+      <!-- REGISTRO -->
+      <div class="tab-content activo" id="tab-registro">
+        <div class="form-card">
+          <h3>¡Bienvenido/a! 🤗</h3>
+          <p class="form-desc">Crea tu cuenta y comienza tu camino hacia el equilibrio mental y emocional ✨</p>
+          <div id="form-reg">
+            <div class="form-row">
+              <div class="form-group">
+                <label>😊 Tu nombre completo</label>
+                <input type="text" placeholder="Ej: Carlos Martínez" id="r-nombre">
+              </div>
+              <div class="form-group">
+                <label>🎂 Tu edad</label>
+                <input type="number" placeholder="Ej: 42" id="r-edad" min="1" max="120">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>📧 Correo electrónico</label>
+              <input type="email" placeholder="tu@correo.com" id="r-email">
+            </div>
+            <div class="form-group">
+              <label>📱 Número de WhatsApp</label>
+              <input type="tel" placeholder="Ej: 3001234567" id="r-tel">
+            </div>
+            <div class="form-group">
+              <label>🏙️ Ciudad</label>
+              <input type="text" placeholder="Ej: Bogotá, Medellín, Cali..." id="r-ciudad">
+            </div>
+            <div class="form-group">
+              <label>🔒 Contraseña</label>
+              <input type="password" placeholder="Mínimo 6 caracteres" id="r-pass">
+            </div>
+            <div class="form-group">
+              <label>❓ ¿Cómo nos encontraste?</label>
+              <select id="r-fuente">
+                <option value="">— Selecciona una opción —</option>
+                <option>📱 Redes sociales (Instagram, Facebook...)</option>
+                <option>👨‍👩‍👧 Un familiar me recomendó</option>
+                <option>👫 Un amigo me habló de ti</option>
+                <option>🔍 Busqué en Google</option>
+                <option>📺 Vi una publicidad</option>
+                <option>🏥 Me lo recomendó un médico</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <button class="btn-form" onclick="registrar()">🌿 ¡Crear mi cuenta!</button>
+          </div>
+          <div class="mensaje-exito" id="ok-registro">
+            <div class="exito-icono">🎉</div>
+            <h3>¡Ya eres parte de la familia!</h3>
+            <p>Tu cuenta fue creada con éxito. 🌱<br>Ahora ve a la pestaña <strong>"Agendar cita"</strong> para reservar tu primera sesión. <br>¡Te esperamos con los brazos abiertos! 💚</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CITA -->
+      <div class="tab-content" id="tab-cita">
+        <div class="form-card">
+          <h3>Reserva tu espacio 📅</h3>
+          <p class="form-desc">Elige el día y la hora perfecta para ti. ¡Estamos aquí para acompañarte! 🌻</p>
+          <div id="form-cit">
+            <div class="form-group">
+              <label>😊 Tu nombre completo</label>
+              <input type="text" placeholder="Ej: Ana Rodríguez" id="c-nombre">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>📅 Fecha de la cita</label>
+                <input type="date" id="c-fecha">
+              </div>
+              <div class="form-group">
+                <label>🕐 Hora que prefieres</label>
+                <select id="c-hora">
+                  <option value="">— Elige una hora —</option>
+                  <option>🌅 7:00 AM — Tempranito</option>
+                  <option>☀️ 9:00 AM — Media mañana</option>
+                  <option>🌤️ 11:00 AM — Antes del almuerzo</option>
+                  <option>🌞 2:00 PM — Inicio de tarde</option>
+                  <option>🌇 4:00 PM — Media tarde</option>
+                  <option>🌆 6:00 PM — Tarde-noche</option>
+                  <option>🌙 7:00 PM — Noche</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>💻 ¿Cómo prefieres la sesión?</label>
+              <select id="c-modalidad">
+                <option value="">— Elige tu preferencia —</option>
+                <option>🏠 Presencial — Voy al consultorio</option>
+                <option>📱 Virtual — Videollamada desde mi casa</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>📱 Teléfono de contacto</label>
+              <input type="tel" placeholder="Ej: 3001234567" id="c-tel">
+            </div>
+            <div class="form-group">
+              <label>💭 ¿Qué te trae aquí? <span style="font-weight:600;color:var(--texto-2)">(opcional)</span></label>
+              <textarea placeholder="Puedes contarme un poquito... No hay nada malo que escribir. Por ejemplo: me siento ansioso, quiero aprender a controlar mis emociones, mi hijo necesita ayuda..." id="c-motivo"></textarea>
+            </div>
+            <button class="btn-form" onclick="agendarCita()">📅 ¡Confirmar mi cita!</button>
+          </div>
+          <div class="mensaje-exito" id="ok-cita">
+            <div class="exito-icono">🌟</div>
+            <h3>¡Tu cita está confirmada!</h3>
+            <p>Te enviaremos un recordatorio por WhatsApp 24 horas antes. 📱<br><br>Recuerda: el consultorio es un espacio seguro y cálido. ¡Estamos muy felices de conocerte pronto! 💚🌻</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TESTIMONIOS ════ -->
+<section id="testimonios">
+  <div class="contenedor">
+    <div class="centrar reveal">
+      <div class="sec-label">⭐ Voces reales</div>
+      <h2 class="sec-titulo">Lo que dicen nuestros <em>pacientes</em></h2>
+      <div class="linea centrada"></div>
+      <p class="sec-subtitulo">Personas de todo el país que encontraron su camino hacia el equilibrio</p>
+    </div>
+    <br><br>
+    <div class="testimonios-grid">
+      <div class="test-card reveal">
+        <div class="test-badge">Niños</div>
+        <div class="test-comillas">"</div>
+        <div class="test-estrellas">⭐⭐⭐⭐⭐</div>
+        <p>Antes me daban miedo los exámenes y lloraba mucho. La doctora Luz Adriana me enseñó a respirar y ahora soy más valiente. ¡Me gusta ir a verla!</p>
+        <div class="test-autor">
+          <div class="test-avatar">🧒</div>
+          <div class="test-info">
+            <strong>Tomás, 8 años</strong>
+            <span>Estudiante, Bogotá</span>
+          </div>
+        </div>
+      </div>
+      <div class="test-card reveal reveal-delay-1">
+        <div class="test-badge">Adultos mayores</div>
+        <div class="test-comillas">"</div>
+        <div class="test-estrellas">⭐⭐⭐⭐⭐</div>
+        <p>A mis 68 años pensé que ya era muy tarde. Pero las sesiones virtuales me cambiaron la vida. Ahora duermo mejor y disfruto cada día con mi familia.</p>
+        <div class="test-autor">
+          <div class="test-avatar">👴</div>
+          <div class="test-info">
+            <strong>Don Ernesto, 68 años</strong>
+            <span>Pensionado, Medellín</span>
+          </div>
+        </div>
+      </div>
+      <div class="test-card reveal reveal-delay-2">
+        <div class="test-badge">Adultos</div>
+        <div class="test-comillas">"</div>
+        <div class="test-estrellas">⭐⭐⭐⭐⭐</div>
+        <p>Llevaba años con ansiedad y no sabía cómo manejarla. La Psicóloga Luz Adriana me dio herramientas reales que uso todos los días. Mil gracias.</p>
+        <div class="test-autor">
+          <div class="test-avatar">👩</div>
+          <div class="test-info">
+            <strong>Camila, 38 años</strong>
+            <span>Empresaria, Cali</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-marca">
+      <div class="footer-logo-name">Psicóloga Luz Adriana 🧠❤️</div>
+      <div class="footer-slogan">"Encontrando el equilibrio entre mente y corazón"</div>
+      <p>Psicóloga reconocida a nivel nacional con más de 15 años de experiencia ayudando a niños, adultos y personas mayores en todo Colombia. 🇨🇴</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navegación</h4>
+      <a href="#historia">👩‍⚕️ Quién soy</a>
+      <a href="#proceso">🗺️ Cómo funciona</a>
+      <a href="#metodos">🧠 Mis métodos</a>
+      <a href="#testimonios">⭐ Testimonios</a>
+      <a href="#citas">📅 Agendar cita</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="#">📍 Nacional, Colombia</a>
+      <a href="#">📱 WhatsApp: 300 000 0000</a>
+      <a href="#">📧 luz@psicologaluz.co</a>
+      <a href="#">📸 @PsicologaLuzAdriana</a>
+      <a href="#">🕐 Lun–Sáb · 7 AM – 8 PM</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Psicóloga Luz Adriana · Todos los derechos reservados</span>
+    <span>Hecho con 💚 para el bienestar de Colombia</span>
+  </div>
+</footer>
+
+<script>
+// Tabs
+function cambiarTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('activo'));
+  document.getElementById('tab-' + tab).classList.add('activo');
+  btn.classList.add('activo');
+}
+
+// Registro
+function registrar() {
+  const nombre = document.getElementById('r-nombre').value.trim();
+  const email  = document.getElementById('r-email').value.trim();
+  const tel    = document.getElementById('r-tel').value.trim();
+  const pass   = document.getElementById('r-pass').value;
+  if (!nombre || !email || !tel || !pass) {
+    alert('🌿 Por favor completa todos los campos obligatorios para crear tu cuenta.');
+    return;
+  }
+  document.getElementById('form-reg').style.display = 'none';
+  document.getElementById('ok-registro').style.display = 'block';
+}
+
+// Cita
+function agendarCita() {
+  const nombre    = document.getElementById('c-nombre').value.trim();
+  const fecha     = document.getElementById('c-fecha').value;
+  const hora      = document.getElementById('c-hora').value;
+  const modalidad = document.getElementById('c-modalidad').value;
+  const tel       = document.getElementById('c-tel').value.trim();
+  if (!nombre || !fecha || !hora || !modalidad || !tel) {
+    alert('📅 Por favor completa tu nombre, fecha, hora, modalidad y teléfono.');
+    return;
+  }
+  document.getElementById('form-cit').style.display = 'none';
+  document.getElementById('ok-cita').style.display = 'block';
+}
+
+// Fecha mínima = hoy
+document.getElementById('c-fecha').min = new Date().toISOString().split('T')[0];
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

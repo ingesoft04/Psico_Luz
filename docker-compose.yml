@@ -1,0 +1,196 @@
+version: "3.9"
+
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  PSICÓLOGA LUZ ADRIANA — Backend Stack                      ║
+# ║  PostgreSQL · Redis · Node API · Nginx · pgAdmin            ║
+# ║  Listo para Claude AI · Gemini · N8N automation             ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+services:
+
+  # ─── PostgreSQL ───────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: psicologa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-psicologa_db}
+      POSTGRES_USER:     ${POSTGRES_USER:-psicologa_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-psicologa_user} -d ${POSTGRES_DB:-psicologa_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - psicologa_net
+
+  # ─── Redis (cache + jobs + sessions) ─────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: psicologa_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-redis_secret_2025}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+      --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret_2025}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - psicologa_net
+
+  # ─── Node.js API ──────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: psicologa_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV:        production
+      PORT:            4000
+      DB_HOST:         postgres
+      DB_PORT:         5432
+      REDIS_HOST:      redis
+      REDIS_PORT:      6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    expose:
+      - "4000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - psicologa_net
+
+  # ─── Nginx (reverse proxy + SSL ready) ───────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: psicologa_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./logs/nginx:/var/log/nginx
+      # Para SSL con Let's Encrypt en producción:
+      # - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - api
+    networks:
+      - psicologa_net
+
+  # ─── pgAdmin (UI para PostgreSQL) ─────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: psicologa_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    ${PGADMIN_EMAIL:-admin@psicologa.co}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2025}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - psicologa_net
+    profiles:
+      - tools
+
+  # ─── Redis Commander (UI para Redis) ─────────────────────────
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: psicologa_redis_ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: "local:redis:6379:0:${REDIS_PASSWORD:-redis_secret_2025}"
+      HTTP_USER: admin
+      HTTP_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2025}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - psicologa_net
+    profiles:
+      - tools
+
+  # ─── N8N (Automatización: Claude + Gemini + Webhooks) ─────────
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: psicologa_n8n
+    restart: unless-stopped
+    environment:
+      N8N_BASIC_AUTH_ACTIVE:   "true"
+      N8N_BASIC_AUTH_USER:     ${N8N_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-n8n_2025}
+      N8N_HOST:                ${N8N_HOST:-localhost}
+      N8N_PORT:                5678
+      N8N_PROTOCOL:            http
+      WEBHOOK_URL:             http://${N8N_HOST:-localhost}:5678/
+      DB_TYPE:                 postgresdb
+      DB_POSTGRESDB_HOST:      postgres
+      DB_POSTGRESDB_PORT:      5432
+      DB_POSTGRESDB_DATABASE:  ${POSTGRES_DB:-psicologa_db}
+      DB_POSTGRESDB_USER:      ${POSTGRES_USER:-psicologa_user}
+      DB_POSTGRESDB_PASSWORD:  ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      DB_POSTGRESDB_SCHEMA:    n8n
+      EXECUTIONS_DATA_PRUNE:   "true"
+      EXECUTIONS_DATA_MAX_AGE: 168
+    volumes:
+      - n8n_data:/home/node/.n8n
+    ports:
+      - "5678:5678"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - psicologa_net
+    profiles:
+      - automation
+
+# ─── Volumes ──────────────────────────────────────────────────
+volumes:
+  postgres_data:  { driver: local }
+  redis_data:     { driver: local }
+  pgadmin_data:   { driver: local }
+  n8n_data:       { driver: local }
+
+# ─── Networks ─────────────────────────────────────────────────
+networks:
+  psicologa_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
