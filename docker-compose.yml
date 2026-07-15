@@ -1,5 +1,3 @@
-version: "3.9"
-
 # ╔══════════════════════════════════════════════════════════════╗
 # ║  PSICÓLOGA LUZ ADRIANA — Backend Stack                      ║
 # ║  PostgreSQL · Redis · Node API · Nginx · pgAdmin            ║
@@ -21,8 +19,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-psicologa_user} -d ${POSTGRES_DB:-psicologa_db}"]
       interval: 10s
@@ -45,8 +41,6 @@ services:
       --appendonly yes
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret_2025}", "ping"]
       interval: 10s
@@ -63,14 +57,22 @@ services:
       target: production
     container_name: psicologa_api
     restart: unless-stopped
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
       NODE_ENV:        production
       PORT:            4000
       DB_HOST:         postgres
       DB_PORT:         5432
+      POSTGRES_DB:     ${POSTGRES_DB:-psicologa_db}
+      POSTGRES_USER:   ${POSTGRES_USER:-psicologa_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
       REDIS_HOST:      redis
       REDIS_PORT:      6379
+      REDIS_PASSWORD:  ${REDIS_PASSWORD:-redis_secret_2025}
+      JWT_SECRET:      ${JWT_SECRET:-dev_access_secret_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,12 +97,16 @@ services:
     container_name: psicologa_nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "${HTTP_PORT:-8180}:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./logs/nginx:/var/log/nginx
+      - ./psicologa-luz-adriana.html:/var/www/html/index.html:ro
+      - ./agenda.html:/var/www/html/agenda.html:ro
+      - ./manifest.webmanifest:/var/www/html/manifest.webmanifest:ro
+      - ./icon.svg:/var/www/html/icon.svg:ro
+      - ./sw.js:/var/www/html/sw.js:ro
       # Para SSL con Let's Encrypt en producción:
       # - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
@@ -179,6 +185,26 @@ services:
       - psicologa_net
     profiles:
       - automation
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      POSTGRES_DB: ${POSTGRES_DB:-psicologa_db}
+      POSTGRES_USER: ${POSTGRES_USER:-psicologa_user}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - psicologa_net
+    profiles:
+      - backup
 
 # ─── Volumes ──────────────────────────────────────────────────
 volumes:

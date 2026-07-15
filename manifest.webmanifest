@@ -1,0 +1,12 @@
+{
+  "name": "Psicóloga Luz Adriana — Mi espacio",
+  "short_name": "Mi espacio",
+  "description": "Agenda y seguimiento de sesiones con la Psicóloga Luz Adriana",
+  "start_url": "/agenda.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fbf8ef",
+  "theme_color": "#247b6f",
+  "lang": "es-CO",
+  "icons": [{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

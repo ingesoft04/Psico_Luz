@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Psicóloga Luz Adriana — Tu Camino Hacia el Equilibrio</title>
+<meta name="theme-color" content="#247b6f">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -557,7 +560,7 @@ footer{
     <a href="#proceso">🗺️ Proceso</a>
     <a href="#metodos">🧠 Métodos</a>
     <a href="#testimonios">⭐ Voces</a>
-    <a href="#citas" class="cta-nav">📅 Agendar cita</a>
+    <a href="/agenda.html" target="_blank" rel="noopener" class="cta-nav">📅 Ver agenda disponible</a>
   </div>
 </nav>
 
@@ -603,7 +606,7 @@ footer{
         <span class="hero-badge">📍 Nivel Nacional</span>
         <span class="hero-badge">💻 Virtual y presencial</span>
       </div>
-      <a href="#citas" class="btn-hero">📅 Agendar mi cita</a>
+      <a href="/agenda.html" target="_blank" rel="noopener" class="btn-hero">📅 Ver citas disponibles</a>
       <a href="#historia" class="btn-hero-2">Conocerme →</a>
     </div>
   </div>
@@ -781,7 +784,7 @@ footer{
     <div class="tabs-wrap">
       <div class="tabs">
         <button class="tab-btn activo" onclick="cambiarTab('registro',this)">👤 Crear mi cuenta</button>
-        <button class="tab-btn" onclick="cambiarTab('cita',this)">📅 Agendar cita</button>
+        <button class="tab-btn" onclick="window.open('/agenda.html','agendaLuz','noopener,width=1180,height=820')">📅 Abrir agenda en nueva ventana ↗</button>
       </div>
 
       <!-- REGISTRO -->
@@ -965,7 +968,7 @@ footer{
       <a href="#proceso">🗺️ Cómo funciona</a>
       <a href="#metodos">🧠 Mis métodos</a>
       <a href="#testimonios">⭐ Testimonios</a>
-      <a href="#citas">📅 Agendar cita</a>
+      <a href="/agenda.html" target="_blank" rel="noopener">📅 Agendar cita</a>
     </div>
     <div class="footer-col">
       <h4>Contacto</h4>
@@ -977,7 +980,7 @@ footer{
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 Psicóloga Luz Adriana · Todos los derechos reservados</span>
+    <span>© 2026 Psicóloga Luz Adriana · Todos los derechos reservados</span>
     <span>Hecho con 💚 para el bienestar de Colombia</span>
   </div>
 </footer>
@@ -1001,8 +1004,7 @@ function registrar() {
     alert('🌿 Por favor completa todos los campos obligatorios para crear tu cuenta.');
     return;
   }
-  document.getElementById('form-reg').style.display = 'none';
-  document.getElementById('ok-registro').style.display = 'block';
+  window.open('/agenda.html', 'agendaLuz', 'noopener,width=1180,height=820');
 }
 
 // Cita
@@ -1016,8 +1018,7 @@ function agendarCita() {
     alert('📅 Por favor completa tu nombre, fecha, hora, modalidad y teléfono.');
     return;
   }
-  document.getElementById('form-cit').style.display = 'none';
-  document.getElementById('ok-cita').style.display = 'block';
+  window.open('/agenda.html', 'agendaLuz', 'noopener,width=1180,height=820');
 }
 
 // Fecha mínima = hoy
@@ -1028,6 +1029,7 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
 </html>

@@ -61,13 +61,9 @@ docker-compose --profile tools --profile automation up -d
 
 ### 3. Verificar que funciona
 ```bash
-curl http://localhost:8180/health
+curl http://localhost/health
 # → {"status":"healthy","checks":{"postgres":"ok","redis":"ok"}}
 ```
-
-Abre `http://localhost:8180` para ver el sitio y usa **Ver agenda disponible**. La agenda se abre en una ventana nueva, permite registro/inicio de sesión y consulta cupos reales antes de reservar.
-
-> Para una prueba local, Compose incluye valores de desarrollo. Antes de publicar, crea `.env` desde `.env.example` y reemplaza contraseñas, secretos JWT y credenciales externas.
 
 ### 4. Ver logs en tiempo real
 ```bash
@@ -101,22 +97,12 @@ Base URL: `http://localhost/api/v1`
 | PUT  | `/citas/:id` | Actualizar cita |
 | PATCH | `/citas/:id/estado` | Cambiar estado |
 | DELETE | `/citas/:id` | Cancelar cita |
-| PATCH | `/citas/:id/reprogramar` | Reprogramar una cita propia |
-| GET | `/citas/:id/calendario.ics` | Descargar evento para calendario |
 
 ### 🗓️ Disponibilidad
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | GET | `/disponibilidad` | Horarios disponibles por día |
 | GET | `/disponibilidad/slots?fecha=2025-12-01&modalidad=virtual` | Slots libres para una fecha |
-
-Los slots usan la zona horaria `America/Bogota`, excluyen días bloqueados, citas activas y horas que ya pasaron. La creación de citas usa un bloqueo transaccional en PostgreSQL para evitar reservas simultáneas del mismo espacio.
-
-La agenda funciona como PWA instalable y ofrece una sección **Mis próximas citas** para descargar el evento de calendario o cancelar una reserva. El perfil `backup` crea respaldos diarios con retención configurable:
-
-```bash
-docker compose --profile backup up -d
-```
 
 ### 🧠 Inteligencia Artificial
 | Método | Endpoint | Descripción |
