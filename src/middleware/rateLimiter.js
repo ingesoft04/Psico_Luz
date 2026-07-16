@@ -10,11 +10,13 @@ const makeStore = (prefix) => new RedisStore({
 
 const apiLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max:      parseInt(process.env.RATE_LIMIT_MAX) || 100,
+  max:      parseInt(process.env.RATE_LIMIT_MAX) || 1000,
   standardHeaders: true,
   legacyHeaders: false,
   store: makeStore('rl:api:'),
   message: { ok: false, message: 'Demasiadas peticiones, intenta en unos minutos' },
+  skip: req => Boolean(req.headers.authorization) &&
+    (/^\/api\/v1\/(clinical|maintenance|admin|notas)\//.test(req.originalUrl)),
 });
 
 const authLimiter = rateLimit({

@@ -75,7 +75,7 @@ exports.login = async (req, res) => {
   await redis.setex(`refresh:${user.id}`, 30 * 24 * 3600, tokens.refreshToken);
 
   // Cache del usuario
-  const safe = { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol };
+  const safe = { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol, activo: user.activo };
   await redis.setex(`user:${user.id}`, redis.TTL.CACHE, JSON.stringify(safe));
 
   res.json({

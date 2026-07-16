@@ -22,6 +22,9 @@ const notificacionesRoutes = require('./routes/notificaciones');
 const aiRoutes           = require('./routes/ai');
 const adminRoutes        = require('./routes/admin');
 const webhookRoutes      = require('./routes/webhooks');
+const clinicalRoutes     = require('./routes/clinical');
+const maintenanceRoutes  = require('./routes/maintenance');
+const waitlistRoutes     = require('./routes/waitlist');
 
 const app = express();
 
@@ -91,6 +94,9 @@ app.use(`${api}/notificaciones`,  notificacionesRoutes);
 app.use(`${api}/ai`,              aiRoutes);
 app.use(`${api}/admin`,           adminRoutes);
 app.use(`${api}/webhooks`,        webhookRoutes);
+app.use(`${api}/clinical`,        clinicalRoutes);
+app.use(`${api}/maintenance`,     maintenanceRoutes);
+app.use(`${api}/lista-espera`,    waitlistRoutes);
 
 // ─── Documentación básica ─────────────────────────────────
 app.get('/api/v1/docs', (req, res) => {

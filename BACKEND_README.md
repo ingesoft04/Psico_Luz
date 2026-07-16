@@ -69,10 +69,54 @@ Abre `http://localhost:8180` para ver el sitio y usa **Ver agenda disponible**. 
 
 > Para una prueba local, Compose incluye valores de desarrollo. Antes de publicar, crea `.env` desde `.env.example` y reemplaza contraseñas, secretos JWT y credenciales externas.
 
+En desarrollo se crean automáticamente dos cuentas operativas:
+
+| Uso | Usuario local | Rol |
+|---|---|---|
+| Atención clínica | `psicologa@psicologaluz.local` | `psicologa` |
+| Mantenimiento | `mantenimiento@psicologaluz.local` | `admin` |
+
+Las contraseñas locales están declaradas como valores predeterminados en `docker-compose.yml`. Para cualquier entorno compartido o productivo deben reemplazarse mediante `PSYCHOLOGIST_*` y `MAINTENANCE_*` en `.env`. El arranque es idempotente: crea las cuentas si no existen y sincroniza nombre, contraseña, rol y estado si ya existen.
+
 ### 4. Ver logs en tiempo real
 ```bash
 docker-compose logs -f api
 ```
+
+### 5. Ejecutar pruebas
+
+```bash
+npm test                 # pruebas unitarias
+npm run test:integration # flujo real contra Docker en localhost:8180
+npm run test:all         # ambas suites
+```
+
+La regresión principal verifica que una cita recién creada aparezca en **Mis próximas citas** incluso cuando Redis ya tenga listados con otros filtros de fecha.
+
+## Paneles operativos
+
+- Pacientes y agenda: `http://localhost:8180/agenda.html`
+- Psicóloga y mantenimiento: `http://localhost:8180/panel.html`
+
+El panel cambia según el rol autenticado. La psicóloga puede consultar agenda, pacientes,
+horarios, registrar lo atendido y exportar informes clínicos firmados. Mantenimiento usa
+el rol `superadmin`: puede crear, editar, bloquear y eliminar lógicamente cuentas, consultar
+salud, auditoría técnica y migraciones, pero recibe `403` al intentar acceder a información clínica.
+
+## Funciones avanzadas
+
+- Migraciones versionadas ejecutadas al arrancar.
+- Auditoría separada para accesos a información clínica.
+- Informes PDF clasificados como `CONFIDENCIAL`, sellados con SHA-256 y HMAC-SHA256.
+- Las notas firmadas son inmutables; las correcciones deben registrarse como nueva versión.
+- Lista de espera por modalidad y rango de fechas.
+- Salas virtuales con acceso limitado desde 30 minutos antes de la sesión.
+- Consentimiento registrable en cada cita.
+- Pagos, recordatorios y notificaciones mediante las rutas y colas existentes.
+- Backups diarios con el perfil Docker `backup`.
+
+Para activar envíos reales configura SMTP y Twilio en `.env`. Para videoconsulta puede
+configurarse `VIDEO_BASE_URL`; sin valor se generan salas privadas de Jitsi.
 
 ---
 

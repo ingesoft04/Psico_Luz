@@ -1,0 +1,5 @@
+const router=require('express').Router();const db=require('../config/database');const {auth}=require('../middleware/auth');router.use(auth);
+router.get('/',async(req,res)=>{const {rows}=await db.query('SELECT * FROM app.lista_espera WHERE paciente_id=$1 ORDER BY created_at DESC',[req.user.id]);res.json({ok:true,data:rows})});
+router.post('/',async(req,res)=>{const {modalidad,fecha_desde,fecha_hasta,preferencias}=req.body;if(!['virtual','presencial'].includes(modalidad)||!/^\d{4}-\d{2}-\d{2}$/.test(fecha_desde||''))return res.status(400).json({ok:false,message:'Datos inválidos'});const {rows}=await db.query(`INSERT INTO app.lista_espera(paciente_id,modalidad,fecha_desde,fecha_hasta,preferencias) VALUES($1,$2,$3,$4,$5) RETURNING *`,[req.user.id,modalidad,fecha_desde,fecha_hasta||null,preferencias]);res.status(201).json({ok:true,data:rows[0]})});
+router.delete('/:id',async(req,res)=>{await db.query(`UPDATE app.lista_espera SET estado='cancelada',updated_at=NOW() WHERE id=$1 AND paciente_id=$2`,[req.params.id,req.user.id]);res.json({ok:true})});
+module.exports=router;

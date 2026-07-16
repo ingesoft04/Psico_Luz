@@ -7,7 +7,9 @@
     "start":     "node src/server.js",
     "dev":       "nodemon src/server.js",
     "lint":      "eslint src/",
-    "test":      "jest --forceExit",
+    "test":      "node --test tests/unit/*.test.js",
+    "test:integration": "node --test --test-concurrency=1 tests/integration.test.js",
+    "test:all": "node --test --test-concurrency=1 tests/unit/*.test.js tests/integration.test.js",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:tools": "docker-compose --profile tools up -d",
@@ -41,7 +43,8 @@
     "express-async-errors":  "^3.1.1",
     "uuid":                  "^10.0.0",
     "dayjs":                 "^1.11.13",
-    "zod":                   "^3.23.8"
+    "zod":                   "^3.23.8",
+    "pdfkit":                "^0.15.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7",

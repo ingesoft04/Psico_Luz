@@ -4,6 +4,7 @@ const db       = require('../config/database');
 const redis    = require('../config/redis');
 const AppError = require('../utils/AppError');
 const { citaQueue } = require('../jobs/queues');
+const { listCacheKey, addMinutes } = require('../utils/citas');
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ exports.listar = async (req, res) => {
   const offset = (page - 1) * limit;
   const user   = req.user;
 
-  const cacheKey = CACHE_KEY.lista(user.id, user.rol) + `:${page}:${estado||''}`;
+  const cacheKey = listCacheKey(user, { page, limit, estado, desde, hasta });
   const cached   = await redis.get(cacheKey);
   if (cached) return res.json({ ok: true, cached: true, ...JSON.parse(cached) });
 
@@ -89,7 +90,7 @@ exports.crear = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(422).json({ ok: false, errors: errors.array() });
 
-  const { fecha, hora_inicio, hora_fin, modalidad, tipo_sesion, motivo, notas_previas, link_videollamada } = req.body;
+  const { fecha, hora_inicio, hora_fin, modalidad, tipo_sesion, motivo, notas_previas, link_videollamada, consentimiento } = req.body;
   const paciente_id = req.user.rol === 'paciente' ? req.user.id : req.body.paciente_id;
   if (!paciente_id) throw new AppError('paciente_id requerido', 400);
 
@@ -103,12 +104,12 @@ exports.crear = async (req, res) => {
        AND estado NOT IN ('cancelada','no_asistio')`, [fecha, hora_inicio, modalidad]
     );
     if (conflict.length) throw new AppError('Ese horario acaba de ser reservado. Elige otro.', 409);
-    const end = hora_fin || `${String((Number(hora_inicio.slice(0,2)) + 1) % 24).padStart(2,'0')}:${hora_inicio.slice(3,5)}`;
+    const end = hora_fin || addMinutes(hora_inicio);
     const { rows } = await client.query(`
       INSERT INTO app.citas
-        (paciente_id, fecha, hora_inicio, hora_fin, modalidad, tipo_sesion, motivo, notas_previas, link_videollamada, created_by)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *
-    `, [paciente_id, fecha, hora_inicio, end, modalidad, tipo_sesion || 'individual', motivo, notas_previas, link_videollamada, req.user.id]);
+        (paciente_id, fecha, hora_inicio, hora_fin, modalidad, tipo_sesion, motivo, notas_previas, link_videollamada, created_by, consentimiento_aceptado_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,CASE WHEN $11::boolean THEN NOW() ELSE NULL END) RETURNING *
+    `, [paciente_id, fecha, hora_inicio, end, modalidad, tipo_sesion || 'individual', motivo, notas_previas, link_videollamada, req.user.id, consentimiento === true]);
     cita = rows[0];
     await client.query('COMMIT');
   } catch (error) {
@@ -171,7 +172,7 @@ exports.reprogramar = async (req, res) => {
     await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [`${fecha}:${hora_inicio}:${modalidad}`]);
     const { rows: conflict } = await client.query(`SELECT 1 FROM app.citas WHERE id<>$1 AND fecha=$2 AND hora_inicio=$3 AND modalidad=$4 AND estado NOT IN ('cancelada','no_asistio')`, [id, fecha, hora_inicio, modalidad]);
     if (conflict.length) throw new AppError('Ese horario acaba de ser reservado', 409);
-    const end = `${String(Number(hora_inicio.slice(0,2))+1).padStart(2,'0')}:${hora_inicio.slice(3,5)}`;
+    const end = addMinutes(hora_inicio);
     const { rows } = await client.query(`UPDATE app.citas SET fecha=$1,hora_inicio=$2,hora_fin=$3,modalidad=$4,motivo=COALESCE($5,motivo),estado='pendiente' WHERE id=$6 RETURNING *`, [fecha,hora_inicio,end,modalidad,motivo,id]);
     await client.query('COMMIT');
     await Promise.all([redis.del(`slots:${cita.fecha}:${cita.modalidad}`), redis.del(`slots:${fecha}:${modalidad}`), redis.del(CACHE_KEY.detalle(id)), redis.invalidate('citas:lista:*')]);
@@ -190,6 +191,20 @@ exports.exportarCalendario = async (req, res) => {
   const safe=v=>String(v||'').replace(/[\\;,]/g,m=>`\\${m}`).replace(/\n/g,'\\n');
   const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Psicologa Luz Adriana//Agenda//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT',`UID:${c.id}@psicologaluz.co`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}`,`DTSTART;TZID=America/Bogota:${start}`,`DTEND;TZID=America/Bogota:${end}`,'SUMMARY:Sesión con Psicóloga Luz Adriana',`DESCRIPTION:${safe(`${c.modalidad}. ${c.motivo||'Espacio de acompañamiento psicológico'}`)}`,'STATUS:CONFIRMED','BEGIN:VALARM','TRIGGER:-PT24H','ACTION:DISPLAY','DESCRIPTION:Tu sesión es mañana','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
   res.set({'Content-Type':'text/calendar; charset=utf-8','Content-Disposition':`attachment; filename="cita-${c.id.slice(0,8)}.ics"`}).send(ics);
+};
+
+exports.obtenerSalaVirtual = async (req,res) => {
+  const {rows}=await db.query('SELECT * FROM app.citas WHERE id=$1',[req.params.id]);
+  if(!rows.length) throw new AppError('Cita no encontrada',404);
+  const c=rows[0];
+  if(req.user.rol==='paciente'&&c.paciente_id!==req.user.id) throw new AppError('Sin permiso',403);
+  if(c.modalidad!=='virtual') throw new AppError('La cita no es virtual',409);
+  const fecha = c.fecha instanceof Date ? c.fecha.toISOString().slice(0,10) : String(c.fecha).slice(0,10);
+  const start=new Date(`${fecha}T${String(c.hora_inicio).slice(0,8)}-05:00`).getTime();
+  if(!Number.isFinite(start)) throw new AppError('Fecha de sesión inválida',500);
+  if(Date.now()<start-30*60*1000||Date.now()>start+120*60*1000) throw new AppError('La sala estará disponible 30 minutos antes de la sesión',403);
+  const base=process.env.VIDEO_BASE_URL||'https://meet.jit.si';
+  res.json({ok:true,data:{url:c.link_videollamada||`${base}/PsicoLuz-${c.sala_virtual_token}`,disponible_hasta:new Date(start+120*60*1000).toISOString()}});
 };
 
 // ─── CAMBIAR ESTADO ───────────────────────────────────────

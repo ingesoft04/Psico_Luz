@@ -9,6 +9,7 @@ router.use(auth);
 router.get('/',           ctrl.listar);
 router.get('/hoy',        rol('admin','psicologa','recepcionista'), ctrl.hoy);
 router.get('/:id/calendario.ics', ctrl.exportarCalendario);
+router.get('/:id/sala', ctrl.obtenerSalaVirtual);
 router.get('/:id',        ctrl.obtener);
 router.post('/',
   [

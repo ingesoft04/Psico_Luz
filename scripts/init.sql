@@ -355,19 +355,7 @@ CREATE TRIGGER trg_audit_usuarios
   AFTER INSERT OR UPDATE OR DELETE ON app.usuarios
   FOR EACH ROW EXECUTE FUNCTION audit.registrar_cambio();
 
--- ─── USUARIO ADMIN INICIAL ────────────────────────────────────
--- Password: Admin2025! (bcrypt hash generado en arranque)
--- Cámbialo INMEDIATAMENTE en producción
-
-INSERT INTO app.usuarios (
-  nombre, apellido, email, password_hash, rol, email_verificado
-) VALUES (
-  'Luz Adriana', 'Admin',
-  'admin@psicologa.co',
-  '$2b$12$PLACEHOLDER_CHANGE_IN_FIRST_RUN',
-  'admin',
-  true
-);
+-- Las cuentas operativas se crean en el arranque desde variables de entorno.
 
 -- ─── VISTAS ÚTILES ────────────────────────────────────────────
 

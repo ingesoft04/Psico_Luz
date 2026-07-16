@@ -11,6 +11,8 @@ const logger = require('./config/logger');
 const db     = require('./config/database');
 const redis  = require('./config/redis');
 const { initQueues } = require('./jobs/queues');
+const { bootstrapManagedUsers } = require('./services/bootstrapUsers');
+const { runMigrations } = require('./services/migrations');
 
 const PORT = process.env.PORT || 4000;
 
@@ -23,6 +25,9 @@ async function start() {
     // 2. Verificar conexión a Redis
     await redis.ping();
     logger.info('✅ Redis conectado');
+
+    await runMigrations();
+    await bootstrapManagedUsers();
 
     // 3. Inicializar colas de trabajo (Bull + Redis)
     await initQueues();

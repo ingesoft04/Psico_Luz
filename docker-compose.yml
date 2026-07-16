@@ -73,6 +73,15 @@ services:
       REDIS_PASSWORD:  ${REDIS_PASSWORD:-redis_secret_2025}
       JWT_SECRET:      ${JWT_SECRET:-dev_access_secret_change_in_production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      PSYCHOLOGIST_NAME: ${PSYCHOLOGIST_NAME:-Luz Adriana}
+      PSYCHOLOGIST_LASTNAME: ${PSYCHOLOGIST_LASTNAME:-Psicóloga}
+      PSYCHOLOGIST_EMAIL: ${PSYCHOLOGIST_EMAIL:-psicologa@psicologaluz.local}
+      PSYCHOLOGIST_PASSWORD: ${PSYCHOLOGIST_PASSWORD:-PsicologaLocal2026!}
+      MAINTENANCE_NAME: ${MAINTENANCE_NAME:-Soporte}
+      MAINTENANCE_LASTNAME: ${MAINTENANCE_LASTNAME:-Técnico}
+      MAINTENANCE_EMAIL: ${MAINTENANCE_EMAIL:-mantenimiento@psicologaluz.local}
+      MAINTENANCE_PASSWORD: ${MAINTENANCE_PASSWORD:-MantenimientoLocal2026!}
+      CLINICAL_SIGNING_SECRET: ${CLINICAL_SIGNING_SECRET:-clinical_dev_signing_secret_change_me}
     depends_on:
       postgres:
         condition: service_healthy
@@ -107,6 +116,8 @@ services:
       - ./manifest.webmanifest:/var/www/html/manifest.webmanifest:ro
       - ./icon.svg:/var/www/html/icon.svg:ro
       - ./sw.js:/var/www/html/sw.js:ro
+      - ./panel.html:/var/www/html/panel.html:ro
+      - ./sesion-clinica.html:/var/www/html/sesion-clinica.html:ro
       # Para SSL con Let's Encrypt en producción:
       # - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
