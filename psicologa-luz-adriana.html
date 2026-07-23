@@ -1031,5 +1031,15 @@ const obs = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
+<style>
+.bot-open{position:fixed;right:22px;bottom:22px;z-index:50;border:0;border-radius:50px;background:#247b6f;color:#fff;padding:14px 19px;font-weight:800;box-shadow:0 12px 35px #173d3855}
+.bot-box{position:fixed;right:22px;bottom:82px;z-index:50;width:min(360px,calc(100% - 32px));background:#fff;border:1px solid #dbe7e3;border-radius:20px;box-shadow:0 22px 60px #173d3844;overflow:hidden}
+.bot-box[hidden]{display:none}.bot-head{background:#173d38;color:#fff;padding:16px;font-weight:800}.bot-log{height:280px;overflow:auto;padding:14px;background:#f7f5ed}.bot-msg{margin:8px 0;padding:10px 12px;border-radius:13px;background:#fff}.bot-msg.me{background:#dff1eb;margin-left:35px}.bot-form{display:flex;padding:10px;gap:8px}.bot-form input{flex:1;border:1px solid #cad9d4;border-radius:10px;padding:10px}.bot-form button{border:0;border-radius:10px;background:#247b6f;color:#fff;font-weight:800;padding:10px}
+</style>
+<button class="bot-open" id="bot-open" aria-controls="bot-box">💬 Asistente</button>
+<section class="bot-box" id="bot-box" hidden><div class="bot-head">Asistente virtual · 24/7</div><div class="bot-log" id="bot-log"><div class="bot-msg">Hola. Puedo ayudarte con citas, horarios, ubicación y sesiones virtuales.</div></div><form class="bot-form" id="bot-form"><input id="bot-input" maxlength="500" placeholder="Escribe tu pregunta…" required><button>Enviar</button></form></section>
+<script>
+(()=>{const box=document.getElementById('bot-box'),log=document.getElementById('bot-log'),input=document.getElementById('bot-input');let session=localStorage.getItem('botSession')||crypto.randomUUID();localStorage.setItem('botSession',session);document.getElementById('bot-open').onclick=()=>box.hidden=!box.hidden;document.getElementById('bot-form').onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;log.insertAdjacentHTML('beforeend',`<div class="bot-msg me"></div>`);log.lastElementChild.textContent=text;input.value='';try{const r=await fetch('/api/v1/webhooks/asistente-web',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mensaje:text,sessionId:session})}),d=await r.json();log.insertAdjacentHTML('beforeend','<div class="bot-msg"></div>');log.lastElementChild.textContent=d.data?.respuesta||d.message||'No pude responder en este momento.'}catch{log.insertAdjacentHTML('beforeend','<div class="bot-msg">No hay conexión. Intenta nuevamente.</div>')}log.scrollTop=log.scrollHeight}})();
+</script>
 </body>
 </html>

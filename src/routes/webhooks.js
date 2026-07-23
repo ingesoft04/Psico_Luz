@@ -10,6 +10,7 @@ const logger  = require('../config/logger');
 const AppError = require('../utils/AppError');
 const { citaQueue, aiQueue, notifQueue } = require('../jobs/queues');
 const aiService = require('../services/aiService');
+const bot = require('../services/botAppointmentService');
 
 // ─── Verificar firma N8N ──────────────────────────────────
 
@@ -105,26 +106,7 @@ router.post('/whatsapp', async (req, res) => {
 
   logger.info(`WhatsApp entrante de ${telefono}: ${mensaje}`);
 
-  // Buscar usuario por teléfono
-  const { rows } = await db.query(
-    'SELECT id, nombre FROM app.usuarios WHERE REPLACE(whatsapp,\' \',\'\')=$1 OR REPLACE(telefono,\' \',\'\')=$1',
-    [telefono]
-  );
-
-  // Respuesta automática inteligente con Claude
-  const sessionId = `wa:${telefono}`;
-  let respuesta;
-
-  if (!rows.length) {
-    respuesta = `¡Hola ${ProfileName || ''}! 👋 Soy el asistente virtual de la Psicóloga Luz Adriana. Para atenderte mejor, por favor regístrate en nuestra web. ¿Cómo puedo ayudarte?`;
-  } else {
-    const result = await aiService.chatAsistente({
-      userId: rows[0].id,
-      mensaje: Body,
-      sessionId,
-    });
-    respuesta = result.respuesta;
-  }
+  const respuesta = await bot.respond('whatsapp',telefono,Body);
 
   // Responder via Twilio TwiML
   res.type('text/xml').send(`
@@ -133,6 +115,21 @@ router.post('/whatsapp', async (req, res) => {
       <Message>${respuesta}</Message>
     </Response>
   `);
+});
+
+router.post('/telegram', async(req,res)=>{
+  if(process.env.TELEGRAM_WEBHOOK_SECRET&&req.headers['x-telegram-bot-api-secret-token']!==process.env.TELEGRAM_WEBHOOK_SECRET)throw new AppError('Webhook Telegram no autorizado',401);
+  const message=req.body.message||req.body.edited_message,chatId=String(message?.chat?.id||'');
+  if(!chatId||!message?.text)return res.json({ok:true});
+  const respuesta=await bot.respond('telegram',chatId,message.text);
+  if(process.env.TELEGRAM_BOT_TOKEN)await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text:respuesta})});
+  res.json({ok:true});
+});
+
+router.post('/asistente-web',async(req,res)=>{
+  const session=String(req.body.sessionId||req.ip).slice(0,120);
+  const respuesta=await bot.respond('web',session,req.body.mensaje);
+  res.json({ok:true,data:{respuesta,sessionId:session}});
 });
 
 // ════════════════════════════════════════════════════════════

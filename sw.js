@@ -1,4 +1,4 @@
-const CACHE='psico-luz-v4';
+const CACHE='psico-luz-v5';
 const STATIC=['/','/agenda.html','/panel.html','/sesion-clinica.html','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

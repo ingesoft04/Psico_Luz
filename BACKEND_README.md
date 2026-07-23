@@ -74,7 +74,7 @@ En desarrollo se crean automáticamente dos cuentas operativas:
 | Uso | Usuario local | Rol |
 |---|---|---|
 | Atención clínica | `psicologa@psicologaluz.local` | `psicologa` |
-| Mantenimiento | `mantenimiento@psicologaluz.local` | `admin` |
+| Mantenimiento | `mantenimiento@psicologaluz.local` | `superadmin` |
 
 Las contraseñas locales están declaradas como valores predeterminados en `docker-compose.yml`. Para cualquier entorno compartido o productivo deben reemplazarse mediante `PSYCHOLOGIST_*` y `MAINTENANCE_*` en `.env`. El arranque es idempotente: crea las cuentas si no existen y sincroniza nombre, contraseña, rol y estado si ya existen.
 

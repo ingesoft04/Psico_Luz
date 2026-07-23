@@ -18,6 +18,9 @@ router.post('/register',
     body('email').isEmail().normalizeEmail().withMessage('Email inválido'),
     passRules,
     body('telefono').optional().isMobilePhone('es-CO'),
+    body('tipo_documento').optional({ nullable:true }).isIn(['CC','CE','TI','PA']),
+    body('numero_documento').optional({ nullable:true }).trim().isLength({ min:4,max:40 }),
+    body('fecha_nacimiento').optional({ nullable:true }).isDate(),
   ],
   ctrl.register
 );

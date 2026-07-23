@@ -11,7 +11,11 @@ router.use(auth, rol('psicologa'));
 const fullDocument = async noteId => {
   const { rows } = await db.query(`SELECT n.*,c.fecha,c.hora_inicio,c.hora_fin,c.modalidad,
     p.nombre paciente_nombre,p.apellido paciente_apellido,p.email paciente_email,
+    p.tipo_documento,p.numero_documento,p.fecha_nacimiento,
     pr.nombre profesional_nombre,pr.apellido profesional_apellido,pr.email profesional_email
+    ,(SELECT COUNT(*) FROM app.citas cx WHERE cx.paciente_id=n.paciente_id
+      AND (cx.fecha<c.fecha OR (cx.fecha=c.fecha AND cx.hora_inicio<=c.hora_inicio))
+      AND cx.estado<>'cancelada') AS numero_sesion
     FROM app.notas_sesion n JOIN app.citas c ON c.id=n.cita_id
     JOIN app.usuarios p ON p.id=n.paciente_id JOIN app.usuarios pr ON pr.id=n.profesional_id
     WHERE n.id=$1`, [noteId]);

@@ -2,6 +2,12 @@
 
 > Stack: **Node.js · PostgreSQL · Redis · Docker · N8N · Claude AI · Gemini**
 
+## Manual completo
+
+Consulte [MANUAL_INSTALACION_Y_USO.md](MANUAL_INSTALACION_Y_USO.md) para instalación en
+Windows/Linux, configuración de `.env`, SMTP, dominio, HTTPS, operación por roles,
+documentos clínicos, respaldos, restauración, actualización y diagnóstico.
+
 ---
 
 ## 🏗️ Arquitectura

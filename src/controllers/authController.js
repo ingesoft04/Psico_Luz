@@ -20,7 +20,7 @@ exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(422).json({ ok: false, errors: errors.array() });
 
-  const { nombre, apellido, email, password, telefono, whatsapp, ciudad, genero, como_nos_conocio } = req.body;
+  const { nombre, apellido, email, password, telefono, whatsapp, ciudad, genero, como_nos_conocio, tipo_documento, numero_documento, fecha_nacimiento } = req.body;
 
   const { rows: exists } = await db.query('SELECT id FROM app.usuarios WHERE email=$1', [email]);
   if (exists.length) throw new AppError('Este correo ya está registrado', 409);
@@ -30,10 +30,10 @@ exports.register = async (req, res) => {
 
   const { rows } = await db.query(`
     INSERT INTO app.usuarios
-      (nombre, apellido, email, password_hash, telefono, whatsapp, ciudad, genero, como_nos_conocio, token_verificacion)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      (nombre, apellido, email, password_hash, telefono, whatsapp, ciudad, genero, como_nos_conocio, token_verificacion, tipo_documento, numero_documento, fecha_nacimiento)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
     RETURNING id, nombre, apellido, email, rol, activo, created_at
-  `, [nombre, apellido, email, hash, telefono, whatsapp, ciudad, genero, como_nos_conocio, tokenVerif]);
+  `, [nombre, apellido, email, hash, telefono, whatsapp, ciudad, genero, como_nos_conocio, tokenVerif, tipo_documento || null, numero_documento || null, fecha_nacimiento || null]);
 
   const user = rows[0];
   const tokens = makeTokens(user);

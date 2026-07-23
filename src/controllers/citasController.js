@@ -5,6 +5,7 @@ const redis    = require('../config/redis');
 const AppError = require('../utils/AppError');
 const { citaQueue } = require('../jobs/queues');
 const { listCacheKey, addMinutes } = require('../utils/citas');
+const automation = require('../services/appointmentAutomationService');
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -124,12 +125,7 @@ exports.crear = async (req, res) => {
   await redis.del(`slots:${fecha}:${modalidad}`);
   await redis.del(CACHE_KEY.hoy());
 
-  // Encolar recordatorio automático (24h antes)
-  await citaQueue.add('recordatorio-cita', { citaId: cita.id }, {
-    delay: Math.max(0, new Date(`${fecha}T${hora_inicio}:00`).getTime() - Date.now() - 24 * 3600 * 1000),
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 5000 }
-  });
+  await automation.created(cita.id);
 
   res.status(201).json({ ok: true, message: '¡Cita agendada exitosamente!', data: cita });
 };
@@ -176,6 +172,7 @@ exports.reprogramar = async (req, res) => {
     const { rows } = await client.query(`UPDATE app.citas SET fecha=$1,hora_inicio=$2,hora_fin=$3,modalidad=$4,motivo=COALESCE($5,motivo),estado='pendiente' WHERE id=$6 RETURNING *`, [fecha,hora_inicio,end,modalidad,motivo,id]);
     await client.query('COMMIT');
     await Promise.all([redis.del(`slots:${cita.fecha}:${cita.modalidad}`), redis.del(`slots:${fecha}:${modalidad}`), redis.del(CACHE_KEY.detalle(id)), redis.invalidate('citas:lista:*')]);
+    await automation.rescheduled(id);
     res.json({ ok:true, message:'Cita reprogramada correctamente', data:rows[0] });
   } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
 };
@@ -254,6 +251,7 @@ exports.cancelar = async (req, res) => {
   await redis.del(CACHE_KEY.detalle(id));
   await redis.invalidate('citas:lista:*');
   await redis.del(`slots:${rows[0].fecha}:${rows[0].modalidad}`);
+  await automation.cancelled(id);
 
   res.json({ ok: true, message: 'Cita cancelada', data: rows[0] });
 };

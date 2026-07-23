@@ -47,6 +47,24 @@ async function runMigrations() {
       ALTER TABLE app.notas_sesion ADD COLUMN IF NOT EXISTS enviado_at TIMESTAMPTZ;
       ALTER TABLE app.notas_sesion ADD COLUMN IF NOT EXISTS enviado_a VARCHAR(320);
     `
+  },{
+    version: 6, name: 'automatizacion_multicanal',
+    sql: `
+      ALTER TABLE app.citas ADD COLUMN IF NOT EXISTS google_event_id VARCHAR(255);
+      ALTER TABLE app.citas ADD COLUMN IF NOT EXISTS google_event_url TEXT;
+      ALTER TABLE app.citas ADD COLUMN IF NOT EXISTS canal_origen VARCHAR(30) NOT NULL DEFAULT 'web';
+      ALTER TABLE app.usuarios ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(80);
+      CREATE INDEX IF NOT EXISTS idx_usuarios_telegram ON app.usuarios(telegram_chat_id);
+    `
+  },{
+    version: 7, name: 'datos_documentales_historia_clinica',
+    sql: `
+      ALTER TABLE app.usuarios ADD COLUMN IF NOT EXISTS tipo_documento VARCHAR(10);
+      ALTER TABLE app.usuarios ADD COLUMN IF NOT EXISTS numero_documento VARCHAR(40);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_documento
+        ON app.usuarios(tipo_documento,numero_documento)
+        WHERE numero_documento IS NOT NULL;
+    `
   }];
   for (const migration of migrations) {
     const exists = await db.query('SELECT 1 FROM app.schema_migrations WHERE version=$1', [migration.version]);
