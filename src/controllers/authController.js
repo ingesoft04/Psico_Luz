@@ -8,11 +8,12 @@ const redis    = require('../config/redis');
 const AppError = require('../utils/AppError');
 const logger   = require('../config/logger');
 
+const JWT_OPTIONS={issuer:'psicologa-luz-api',audience:'psicologa-luz-web'};
 const sign = (payload, secret, expiresIn) =>
-  jwt.sign(payload, secret, { expiresIn });
+  jwt.sign({...payload,jti:uuidv4()}, secret, { expiresIn,...JWT_OPTIONS });
 
 const makeTokens = (user) => ({
-  accessToken:  sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, process.env.JWT_EXPIRES_IN || '7d'),
+  accessToken:  sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, process.env.JWT_EXPIRES_IN || '8h'),
   refreshToken: sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, process.env.JWT_REFRESH_EXPIRES_IN || '30d'),
 });
 
@@ -89,7 +90,7 @@ exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) throw new AppError('Refresh token requerido', 401);
 
-  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET,JWT_OPTIONS);
   const stored  = await redis.get(`refresh:${decoded.id}`);
   if (stored !== refreshToken) throw new AppError('Refresh token inválido', 401);
 
@@ -109,7 +110,9 @@ exports.logout = async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (token) {
     // Blacklist el access token hasta su expiración
-    await redis.setex(`blacklist:${token}`, 7 * 24 * 3600, '1');
+    const decoded=jwt.decode(token);
+    const ttl=Math.max(1,Number(decoded?.exp||0)-Math.floor(Date.now()/1000));
+    await redis.setex(`blacklist:${token}`, ttl, '1');
   }
   await redis.del(`refresh:${req.user.id}`);
   await redis.del(`user:${req.user.id}`);
@@ -128,11 +131,13 @@ exports.forgotPassword = async (req, res) => {
     [token, exp, rows[0].id]
   );
   // TODO: enviar email con enlace de reset
-  logger.info(`Reset password solicitado para: ${email}`);
+  logger.info('Solicitud de recuperación de contraseña procesada');
   res.json({ ok: true, message: 'Si el correo existe, recibirás instrucciones.' });
 };
 
 exports.resetPassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(422).json({ ok:false, errors:errors.array() });
   const { token, password } = req.body;
   const { rows } = await db.query(
     'SELECT id FROM app.usuarios WHERE token_reset=$1 AND token_reset_exp > NOW()',

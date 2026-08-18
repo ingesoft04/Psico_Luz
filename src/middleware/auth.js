@@ -17,7 +17,7 @@ const auth = async (req, res, next) => {
   const blacklisted = await redis.get(`blacklist:${token}`);
   if (blacklisted) throw new AppError('Token revocado', 401);
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = jwt.verify(token, process.env.JWT_SECRET,{issuer:'psicologa-luz-api',audience:'psicologa-luz-web'});
 
   // Buscar usuario en cache primero
   let usuario = JSON.parse(await redis.get(`user:${decoded.id}`) || 'null');

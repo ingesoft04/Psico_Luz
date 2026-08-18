@@ -8,7 +8,10 @@ const { auth }   = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
 
 const passRules = body('password')
-  .isLength({ min: 6 }).withMessage('Mínimo 6 caracteres');
+  .isLength({ min: 10 }).withMessage('Mínimo 10 caracteres')
+  .matches(/[a-z]/).withMessage('Incluye una letra minúscula')
+  .matches(/[A-Z]/).withMessage('Incluye una letra mayúscula')
+  .matches(/\d/).withMessage('Incluye un número');
 
 router.post('/register',
   authLimiter,
@@ -37,7 +40,7 @@ router.post('/login',
 router.post('/refresh',  ctrl.refreshToken);
 router.post('/logout',   auth, ctrl.logout);
 router.post('/forgot-password', authLimiter, [body('email').isEmail()], ctrl.forgotPassword);
-router.post('/reset-password',  authLimiter, ctrl.resetPassword);
+router.post('/reset-password',  authLimiter, [passRules], ctrl.resetPassword);
 router.get('/verify-email/:token', ctrl.verifyEmail);
 router.get('/me', auth, ctrl.me);
 

@@ -36,6 +36,8 @@ body{
   font-size:18px;
   overflow-x:hidden;
 }
+.skip-link{position:fixed;left:16px;top:-80px;z-index:1000;background:var(--texto);color:#fff;padding:12px 18px;border-radius:0 0 12px 12px;text-decoration:none;font-weight:800}.skip-link:focus{top:0}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--dorado);outline-offset:3px}
 
 /* ── FONDO TEXTURA ── */
 body::before{
@@ -511,7 +513,7 @@ footer{
 }
 
 /* ── SCROLL REVEAL ── */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal{opacity:1;transform:none;transition:opacity 0.7s ease,transform 0.7s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 .reveal-delay-1{transition-delay:0.1s;}
 .reveal-delay-2{transition-delay:0.2s;}
@@ -519,7 +521,8 @@ footer{
 
 /* ── RESPONSIVE ── */
 @media(max-width:860px){
-  nav{padding:0 18px;height:auto;padding:12px 18px;}
+  nav{padding:12px 18px;height:auto;gap:10px;flex-wrap:wrap;}
+  .nav-links{width:100%;justify-content:center;gap:4px;}
   .nav-links a{font-size:0.78rem;padding:6px 12px;}
   .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px;}
   .hero-logo-circulo{width:260px;height:260px;}
@@ -541,10 +544,13 @@ footer{
   .metodos-grid{grid-template-columns:1fr;}
   .hero-logo-circulo{width:220px;height:220px;}
   .hero-logo-circulo .logo-img-container{width:180px;height:180px;}
+  .nav-logo{margin:auto}.nav-links a:not(.cta-nav){display:none}.nav-links .cta-nav{width:100%;text-align:center}
 }
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 <!-- ════ NAV ════ -->
 <nav>
@@ -565,7 +571,7 @@ footer{
 </nav>
 
 <!-- ════ HÉROE ════ -->
-<section class="hero">
+<main id="contenido"><section class="hero">
   <!-- Ramas decorativas estilo imagen -->
   <svg class="hero-rama izq" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M40 380 C80 300, 120 260, 100 180 C90 130, 60 100, 80 60" stroke="#2A7B6F" stroke-width="6" stroke-linecap="round" fill="none"/>
@@ -586,7 +592,7 @@ footer{
     <div class="hero-logo-grande">
       <div class="hero-logo-circulo">
         <div class="logo-img-container">
-          <img src="/mnt/user-data/uploads/1773869013874_Quiero_que_le_202603181621.png" alt="Psicóloga Luz Adriana — Equilibrio entre mente y corazón" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <img src="/icon.svg" alt="Identidad visual de Psicóloga Luz Adriana" width="220" height="220">
           <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:7rem;">🧠❤️</div>
         </div>
         <div class="mariposa">🦋</div>
@@ -611,6 +617,8 @@ footer{
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- ════ STATS ════ -->
 <div class="stats-franja">
@@ -817,7 +825,7 @@ footer{
             </div>
             <div class="form-group">
               <label>🔒 Contraseña</label>
-              <input type="password" placeholder="Mínimo 6 caracteres" id="r-pass">
+              <input type="password" minlength="10" placeholder="10+ caracteres, mayúscula, minúscula y número" id="r-pass">
             </div>
             <div class="form-group">
               <label>❓ ¿Cómo nos encontraste?</label>

@@ -33,8 +33,13 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ─── Seguridad ────────────────────────────────────────────
+app.disable('x-powered-by');
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  contentSecurityPolicy: false, // La política del frontend se aplica en Nginx.
+  crossOriginResourcePolicy: { policy: 'same-origin' },
+  referrerPolicy: { policy: 'no-referrer' },
+  hsts: process.env.NODE_ENV === 'production' && process.env.APP_URL?.startsWith('https://')
+    ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
 }));
 
 app.use(cors({
@@ -43,10 +48,10 @@ app.use(cors({
     process.env.APP_URL || 'http://localhost',
     'http://localhost:3000',  // dev frontend
     'http://localhost:5678',  // N8N
-  ],
+  ].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-N8N-Signature']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-N8N-Signature', 'X-Telegram-Bot-Api-Secret-Token', 'X-Payment-Signature']
 }));
 
 // ─── Parsers ──────────────────────────────────────────────

@@ -72,6 +72,7 @@ services:
       REDIS_PORT:      6379
       REDIS_PASSWORD:  ${REDIS_PASSWORD:-redis_secret_2025}
       JWT_SECRET:      ${JWT_SECRET:-dev_access_secret_change_in_production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
       PSYCHOLOGIST_NAME: ${PSYCHOLOGIST_NAME:-Luz Adriana}
       PSYCHOLOGIST_LASTNAME: ${PSYCHOLOGIST_LASTNAME:-Psicóloga}

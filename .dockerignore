@@ -1,4 +1,8 @@
 node_modules
+tmp
+output
+backups
+logs
 .env
 logs
 uploads

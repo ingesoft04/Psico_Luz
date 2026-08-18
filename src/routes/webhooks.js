@@ -12,12 +12,21 @@ const { citaQueue, aiQueue, notifQueue } = require('../jobs/queues');
 const aiService = require('../services/aiService');
 const bot = require('../services/botAppointmentService');
 
+const safeEqual=(provided,expected)=>{
+  const a=Buffer.from(String(provided||'')),b=Buffer.from(String(expected||''));
+  return a.length===b.length&&crypto.timingSafeEqual(a,b);
+};
+const requiredInProduction=(secret,name)=>{
+  if(!secret&&process.env.NODE_ENV==='production')throw new AppError(`${name} no configurado`,503);
+  return Boolean(secret);
+};
+
 // ─── Verificar firma N8N ──────────────────────────────────
 
 function verificarFirmaN8N(req, res, next) {
   const firma    = req.headers['x-n8n-signature'];
   const secreto  = process.env.N8N_WEBHOOK_SECRET;
-  if (!secreto) return next(); // sin secreto configurado, pass
+  if (!requiredInProduction(secreto,'N8N_WEBHOOK_SECRET')) return next();
   if (!firma)   throw new AppError('Firma N8N requerida', 401);
 
   const esperado = crypto
@@ -25,7 +34,7 @@ function verificarFirmaN8N(req, res, next) {
     .update(JSON.stringify(req.body))
     .digest('hex');
 
-  if (!crypto.timingSafeEqual(Buffer.from(firma), Buffer.from(esperado)))
+  if (!safeEqual(firma,esperado))
     throw new AppError('Firma N8N inválida', 403);
   next();
 }
@@ -99,12 +108,18 @@ router.post('/n8n', verificarFirmaN8N, async (req, res) => {
 //  WEBHOOK WHATSAPP — Recibe respuestas de pacientes (Twilio)
 // ════════════════════════════════════════════════════════════
 
-router.post('/whatsapp', async (req, res) => {
+router.post('/whatsapp', (req,res,next)=>{
+  if(!process.env.TWILIO_AUTH_TOKEN){if(process.env.NODE_ENV==='production')throw new AppError('TWILIO_AUTH_TOKEN no configurado',503);return next()}
+  const signature=req.headers['x-twilio-signature'];
+  const url=process.env.TWILIO_WEBHOOK_URL||`${process.env.APP_URL}${req.originalUrl}`;
+  if(!signature||!require('twilio').validateRequest(process.env.TWILIO_AUTH_TOKEN,signature,url,req.body))throw new AppError('Firma Twilio inválida',403);
+  next();
+}, async (req, res) => {
   const { From, Body, ProfileName } = req.body;
   const telefono = From?.replace('whatsapp:+57', '').replace(/\D/g, '');
   const mensaje  = Body?.trim().toLowerCase();
 
-  logger.info(`WhatsApp entrante de ${telefono}: ${mensaje}`);
+  logger.info(`WhatsApp entrante procesado para número terminado en ${telefono?.slice(-4)||'****'}`);
 
   const respuesta = await bot.respond('whatsapp',telefono,Body);
 
@@ -118,7 +133,8 @@ router.post('/whatsapp', async (req, res) => {
 });
 
 router.post('/telegram', async(req,res)=>{
-  if(process.env.TELEGRAM_WEBHOOK_SECRET&&req.headers['x-telegram-bot-api-secret-token']!==process.env.TELEGRAM_WEBHOOK_SECRET)throw new AppError('Webhook Telegram no autorizado',401);
+  const secret=process.env.TELEGRAM_WEBHOOK_SECRET;
+  if(requiredInProduction(secret,'TELEGRAM_WEBHOOK_SECRET')&&!safeEqual(req.headers['x-telegram-bot-api-secret-token'],secret))throw new AppError('Webhook Telegram no autorizado',401);
   const message=req.body.message||req.body.edited_message,chatId=String(message?.chat?.id||'');
   if(!chatId||!message?.text)return res.json({ok:true});
   const respuesta=await bot.respond('telegram',chatId,message.text);
@@ -136,7 +152,13 @@ router.post('/asistente-web',async(req,res)=>{
 //  WEBHOOK PAGOS — Wompi / PSE / Stripe
 // ════════════════════════════════════════════════════════════
 
-router.post('/pago', async (req, res) => {
+router.post('/pago', (req,res,next)=>{
+  const secret=process.env.PAYMENT_WEBHOOK_SECRET;
+  if(!requiredInProduction(secret,'PAYMENT_WEBHOOK_SECRET'))return next();
+  const expected=crypto.createHmac('sha256',secret).update(JSON.stringify(req.body)).digest('hex');
+  if(!safeEqual(req.headers['x-payment-signature'],expected))throw new AppError('Firma de pago inválida',403);
+  next();
+}, async (req, res) => {
   const { event, data } = req.body;
   logger.info(`Webhook pago: ${event}`);
 
