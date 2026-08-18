@@ -1,6 +1,14 @@
 const crypto = require('crypto');
 
 class ClinicalDocumentIntegrity {
+  signingSecret() {
+    const secret = process.env.CLINICAL_SIGNING_SECRET;
+    if (process.env.NODE_ENV === 'production' && (!secret || secret.length < 32)) {
+      throw new Error('CLINICAL_SIGNING_SECRET debe tener al menos 32 caracteres en producción');
+    }
+    return secret || 'development-only';
+  }
+
   canonical(note) {
     return JSON.stringify({
       id: note.id,
@@ -21,8 +29,7 @@ class ClinicalDocumentIntegrity {
   }
 
   sign(digest) {
-    const secret = process.env.CLINICAL_SIGNING_SECRET || 'development-only';
-    return crypto.createHmac('sha256', secret).update(digest).digest('hex');
+    return crypto.createHmac('sha256', this.signingSecret()).update(digest).digest('hex');
   }
 
   verify(note) {

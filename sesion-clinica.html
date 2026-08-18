@@ -27,11 +27,11 @@
     <div class="grid">
       <label>Paciente<input id="patient" readonly></label>
       <label>Inicio de sesión<input id="start" readonly></label>
-      <label class="wide">Registro de atención<textarea id="content" required placeholder="Hallazgos, intervenciones y evolución observada"></textarea></label>
+      <label class="wide">Registro de atención<textarea id="content" required maxlength="12000" placeholder="Hallazgos, intervenciones y evolución observada"></textarea></label>
       <label class="short">Estado emocional (1 a 10)<input id="mood" type="number" min="1" max="10"></label>
       <label class="short">Progreso (1 a 5)<input id="progress" type="number" min="1" max="5"></label>
-      <label class="wide short">Tareas acordadas<textarea id="tasks" placeholder="Compromisos acordados con el paciente"></textarea></label>
-      <label class="wide short">Próximos pasos<textarea id="next" placeholder="Seguimiento y plan para la próxima sesión"></textarea></label>
+      <label class="wide short">Tareas acordadas<textarea id="tasks" maxlength="5000" placeholder="Compromisos acordados con el paciente"></textarea></label>
+      <label class="wide short">Próximos pasos<textarea id="next" maxlength="5000" placeholder="Seguimiento y plan para la próxima sesión"></textarea></label>
       <label class="wide hidden" id="email-wrap">Correo de destino<input id="destination" type="email"></label>
     </div>
     <div class="actions">
@@ -48,18 +48,19 @@
 <script>
 // La nueva pestaña hereda sessionStorage de su ventana de origen. Una vez
 // copiada la autenticación, se corta la referencia para evitar tabnabbing.
-const API='/api/v1',token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null');
+const API='/api/v1',token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),updates='BroadcastChannel' in window?new BroadcastChannel('clinical-session-updates'):null;
 if(window.opener)window.opener=null;
 const $=id=>document.getElementById(id),citaId=new URLSearchParams(location.search).get('cita');let context,noteId;
 if(!token||user?.rol!=='psicologa'||!citaId)location.replace('/panel.html');
 async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.message||'No se pudo completar');return d}
 function notify(text,error=false){$('message').textContent=text;$('message').className='message '+(error?'error':'ok')}
+function announceUpdate(){updates?.postMessage({type:'clinical-note-updated',citaId})}
 function payload(){return{contenido:$('content').value.trim(),estado_animo:$('mood').value?Number($('mood').value):null,progreso:$('progress').value?Number($('progress').value):null,tareas_asignadas:$('tasks').value.trim()||null,next_steps:$('next').value.trim()||null}}
 function refreshState(){const signed=Boolean(context.firmado_at),protectedDoc=Boolean(context.protegido_at);['content','mood','progress','tasks','next'].forEach(id=>$(id).disabled=signed);$('save').disabled=signed;$('sign').disabled=signed||!noteId;$('protect').disabled=!signed||protectedDoc;$('pdf').disabled=!protectedDoc;$('show-email').disabled=!protectedDoc;$('security-status').textContent=protectedDoc?'✓ Firmado y protegido':signed?'✓ Firmado · pendiente de protección':'✕ Registro pendiente'}
 async function load(){try{const r=await api('/notas/cita/'+citaId+'/contexto');context=r.data;noteId=context.nota_id;$('patient').value=`${context.paciente_nombre} ${context.paciente_apellido}`;$('start').value=`${String(context.fecha).slice(0,10)} · ${String(context.hora_inicio).slice(0,5)}`;$('session-meta').textContent=`${context.modalidad} · Documento SGSI confidencial`;$('content').value=context.contenido||'';$('mood').value=context.estado_animo||'';$('progress').value=context.progreso||'';$('tasks').value=context.tareas_asignadas||'';$('next').value=context.next_steps||'';$('destination').value=context.paciente_email||'';refreshState()}catch(e){notify(e.message,true)}}
-$('save').onclick=async()=>{try{if(!payload().contenido)throw Error('El registro de atención es obligatorio');const r=noteId?await api('/notas/documento/'+noteId,{method:'PUT',body:JSON.stringify(payload())}):await api('/notas/'+citaId,{method:'POST',body:JSON.stringify(payload())});noteId=r.data.id;context={...context,...r.data};notify('Borrador guardado correctamente');refreshState()}catch(e){notify(e.message,true)}};
-$('sign').onclick=async()=>{try{if(!confirm('Al firmar, el registro quedará inmutable. ¿Continuar?'))return;const r=await api('/notas/documento/'+noteId+'/firmar',{method:'POST'});context={...context,...r.data};notify('Documento firmado electrónicamente');refreshState()}catch(e){notify(e.message,true)}};
-$('protect').onclick=async()=>{try{const r=await api('/notas/documento/'+noteId+'/proteger',{method:'POST'});context={...context,...r.data};notify('Integridad verificada y documento protegido');refreshState()}catch(e){notify(e.message,true)}};
+$('save').onclick=async()=>{try{if(!payload().contenido)throw Error('El registro de atención es obligatorio');const r=noteId?await api('/notas/documento/'+noteId,{method:'PUT',body:JSON.stringify(payload())}):await api('/notas/'+citaId,{method:'POST',body:JSON.stringify(payload())});noteId=r.data.id;context={...context,...r.data};notify('Borrador guardado correctamente');refreshState();announceUpdate()}catch(e){notify(e.message,true)}};
+$('sign').onclick=async()=>{try{if(!confirm('Al firmar, el registro quedará inmutable. ¿Continuar?'))return;const r=await api('/notas/documento/'+noteId+'/firmar',{method:'POST'});context={...context,...r.data};notify('Documento firmado electrónicamente');refreshState();announceUpdate()}catch(e){notify(e.message,true)}};
+$('protect').onclick=async()=>{try{const r=await api('/notas/documento/'+noteId+'/proteger',{method:'POST'});context={...context,...r.data};notify('Integridad verificada y documento protegido');refreshState();announceUpdate()}catch(e){notify(e.message,true)}};
 $('pdf').onclick=async()=>{try{const r=await fetch(`${API}/notas/documento/${noteId}/pdf`,{headers:{Authorization:`Bearer ${token}`}});if(!r.ok){const d=await r.json();throw Error(d.message)}const a=document.createElement('a'),url=URL.createObjectURL(await r.blob());a.href=url;a.download=`informe-clinico-${noteId.slice(0,8)}.pdf`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);notify('PDF confidencial exportado')}catch(e){notify(e.message,true)}};
 $('show-email').onclick=()=>{$('email-wrap').classList.remove('hidden');$('send').classList.remove('hidden');$('destination').focus()};
 $('send').onclick=async()=>{try{if(!confirm('¿Confirma el envío de información clínica confidencial a este correo?'))return;const r=await api('/notas/documento/'+noteId+'/enviar',{method:'POST',body:JSON.stringify({email:$('destination').value})});notify(r.message)}catch(e){notify(e.message,true)}};
