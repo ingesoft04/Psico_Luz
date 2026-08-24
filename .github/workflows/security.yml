@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      # CI no necesita extensiones nativas opcionales; deshabilitar scripts de
+      # instalación reduce el riesgo de ejecución durante la cadena de suministro.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm test
       - run: pnpm run lint
       - run: pnpm audit --prod --audit-level high
