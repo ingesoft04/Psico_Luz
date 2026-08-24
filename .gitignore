@@ -8,3 +8,15 @@ uploads/
 dist/
 coverage/
 backups/
+tmp/
+output/pdf/
+*.tar.gz
+*.zip
+
+# Nunca versionar material clínico o exportaciones locales
+*.dump
+*.backup
+*.pem
+*.key
+*.p12
+*.pfx

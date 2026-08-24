@@ -6,6 +6,9 @@
 require('dotenv').config();
 require('express-async-errors');
 
+const { validateEnvironment } = require('./config/validateEnv');
+validateEnvironment();
+
 const app    = require('./app');
 const logger = require('./config/logger');
 const db     = require('./config/database');

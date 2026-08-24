@@ -67,7 +67,7 @@ curl http://localhost:8180/health
 
 Abre `http://localhost:8180` para ver el sitio y usa **Ver agenda disponible**. La agenda se abre en una ventana nueva, permite registro/inicio de sesión y consulta cupos reales antes de reservar.
 
-> Para una prueba local, Compose incluye valores de desarrollo. Antes de publicar, crea `.env` desde `.env.example` y reemplaza contraseñas, secretos JWT y credenciales externas.
+> Compose no incluye contraseñas operativas. Copia `.env.example` a `.env`, genera secretos únicos y completa todas las variables obligatorias antes de iniciar. En producción, la API se negará a arrancar con secretos ausentes, cortos, repetidos o conocidos públicamente.
 
 En desarrollo se crean automáticamente dos cuentas operativas:
 
@@ -76,7 +76,7 @@ En desarrollo se crean automáticamente dos cuentas operativas:
 | Atención clínica | `psicologa@psicologaluz.local` | `psicologa` |
 | Mantenimiento | `mantenimiento@psicologaluz.local` | `superadmin` |
 
-Las contraseñas locales están declaradas como valores predeterminados en `docker-compose.yml`. Para cualquier entorno compartido o productivo deben reemplazarse mediante `PSYCHOLOGIST_*` y `MAINTENANCE_*` en `.env`. El arranque es idempotente: crea las cuentas si no existen y sincroniza nombre, contraseña, rol y estado si ya existen.
+Las contraseñas de las cuentas operativas deben declararse mediante `PSYCHOLOGIST_*` y `MAINTENANCE_*` en `.env`; no existen valores predeterminados. El arranque es idempotente: crea las cuentas si no existen y sincroniza nombre, contraseña, rol y estado si ya existen.
 
 ### 4. Ver logs en tiempo real
 ```bash

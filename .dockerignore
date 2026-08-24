@@ -11,3 +11,9 @@ uploads
 .gitignore
 README.md
 coverage
+*.tar.gz
+*.zip
+*.pem
+*.key
+*.p12
+*.pfx

@@ -1,8 +1,7 @@
 // middleware/errorHandler.js
 const logger   = require('../config/logger');
-const AppError = require('../utils/AppError');
 
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, req, res, _next) => {
   err.statusCode = err.statusCode || 500;
 
   // Log detallado solo en desarrollo o para errores 500
