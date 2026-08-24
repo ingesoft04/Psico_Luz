@@ -115,9 +115,8 @@ router.post('/whatsapp', (req,res,next)=>{
   if(!signature||!require('twilio').validateRequest(process.env.TWILIO_AUTH_TOKEN,signature,url,req.body))throw new AppError('Firma Twilio inválida',403);
   next();
 }, async (req, res) => {
-  const { From, Body, ProfileName } = req.body;
+  const { From, Body } = req.body;
   const telefono = From?.replace('whatsapp:+57', '').replace(/\D/g, '');
-  const mensaje  = Body?.trim().toLowerCase();
 
   logger.info(`WhatsApp entrante procesado para número terminado en ${telefono?.slice(-4)||'****'}`);
 
@@ -163,8 +162,7 @@ router.post('/pago', (req,res,next)=>{
   logger.info(`Webhook pago: ${event}`);
 
   if (event === 'transaction.updated') {
-    const { id: refExt, status, amount_in_cents, reference } = data?.transaction || {};
-    const monto = amount_in_cents / 100;
+    const { id: refExt, status, reference } = data?.transaction || {};
     const estadoPago = status === 'APPROVED' ? 'pagado'
                      : status === 'VOIDED'   ? 'reembolsado'
                      : 'fallido';

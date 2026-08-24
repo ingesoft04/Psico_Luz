@@ -14,7 +14,7 @@ services:
     environment:
       POSTGRES_DB:       ${POSTGRES_DB:-psicologa_db}
       POSTGRES_USER:     ${POSTGRES_USER:-psicologa_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     command: >
       redis-server
-      --requirepass ${REDIS_PASSWORD:-redis_secret_2025}
+      --requirepass ${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}
       --maxmemory 256mb
       --maxmemory-policy allkeys-lru
       --save 60 1
@@ -42,7 +42,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret_2025}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,7 +59,7 @@ services:
     restart: unless-stopped
     env_file:
       - path: .env
-        required: false
+        required: true
     environment:
       NODE_ENV:        production
       PORT:            4000
@@ -67,23 +67,23 @@ services:
       DB_PORT:         5432
       POSTGRES_DB:     ${POSTGRES_DB:-psicologa_db}
       POSTGRES_USER:   ${POSTGRES_USER:-psicologa_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       REDIS_HOST:      redis
       REDIS_PORT:      6379
-      REDIS_PASSWORD:  ${REDIS_PASSWORD:-redis_secret_2025}
-      JWT_SECRET:      ${JWT_SECRET:-dev_access_secret_change_in_production}
+      REDIS_PASSWORD:  ${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}
+      JWT_SECRET:      ${JWT_SECRET:?Defina JWT_SECRET en .env}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Defina JWT_REFRESH_SECRET en .env}
       PSYCHOLOGIST_NAME: ${PSYCHOLOGIST_NAME:-Luz Adriana}
       PSYCHOLOGIST_LASTNAME: ${PSYCHOLOGIST_LASTNAME:-Psicóloga}
       PSYCHOLOGIST_EMAIL: ${PSYCHOLOGIST_EMAIL:-psicologa@psicologaluz.local}
-      PSYCHOLOGIST_PASSWORD: ${PSYCHOLOGIST_PASSWORD:-PsicologaLocal2026!}
+      PSYCHOLOGIST_PASSWORD: ${PSYCHOLOGIST_PASSWORD:?Defina PSYCHOLOGIST_PASSWORD en .env}
       PSYCHOLOGIST_LICENSE: ${PSYCHOLOGIST_LICENSE:-TP-PENDIENTE}
       MAINTENANCE_NAME: ${MAINTENANCE_NAME:-Soporte}
       MAINTENANCE_LASTNAME: ${MAINTENANCE_LASTNAME:-Técnico}
       MAINTENANCE_EMAIL: ${MAINTENANCE_EMAIL:-mantenimiento@psicologaluz.local}
-      MAINTENANCE_PASSWORD: ${MAINTENANCE_PASSWORD:-MantenimientoLocal2026!}
-      CLINICAL_SIGNING_SECRET: ${CLINICAL_SIGNING_SECRET:-clinical_dev_signing_secret_change_me}
+      MAINTENANCE_PASSWORD: ${MAINTENANCE_PASSWORD:?Defina MAINTENANCE_PASSWORD en .env}
+      CLINICAL_SIGNING_SECRET: ${CLINICAL_SIGNING_SECRET:?Defina CLINICAL_SIGNING_SECRET en .env}
       APP_TIMEZONE: ${APP_TIMEZONE:-America/Bogota}
       GOOGLE_CALENDAR_ID: ${GOOGLE_CALENDAR_ID:-}
       GOOGLE_SERVICE_ACCOUNT_JSON: ${GOOGLE_SERVICE_ACCOUNT_JSON:-}
@@ -140,12 +140,12 @@ services:
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL:    ${PGADMIN_EMAIL:-admin@psicologa.co}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2025}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     ports:
-      - "5050:80"
+      - "127.0.0.1:5050:80"
     depends_on:
       - postgres
     networks:
@@ -159,11 +159,11 @@ services:
     container_name: psicologa_redis_ui
     restart: unless-stopped
     environment:
-      REDIS_HOSTS: "local:redis:6379:0:${REDIS_PASSWORD:-redis_secret_2025}"
+      REDIS_HOSTS: "local:redis:6379:0:${REDIS_PASSWORD:?Defina REDIS_PASSWORD en .env}"
       HTTP_USER: admin
-      HTTP_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2025}
+      HTTP_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     depends_on:
       - redis
     networks:
@@ -179,7 +179,7 @@ services:
     environment:
       N8N_BASIC_AUTH_ACTIVE:   "true"
       N8N_BASIC_AUTH_USER:     ${N8N_USER:-admin}
-      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-n8n_2025}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD}
       N8N_HOST:                ${N8N_HOST:-localhost}
       N8N_PORT:                5678
       N8N_PROTOCOL:            http
@@ -189,14 +189,14 @@ services:
       DB_POSTGRESDB_PORT:      5432
       DB_POSTGRESDB_DATABASE:  ${POSTGRES_DB:-psicologa_db}
       DB_POSTGRESDB_USER:      ${POSTGRES_USER:-psicologa_user}
-      DB_POSTGRESDB_PASSWORD:  ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      DB_POSTGRESDB_PASSWORD:  ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       DB_POSTGRESDB_SCHEMA:    n8n
       EXECUTIONS_DATA_PRUNE:   "true"
       EXECUTIONS_DATA_MAX_AGE: 168
     volumes:
       - n8n_data:/home/node/.n8n
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     depends_on:
       postgres:
         condition: service_healthy
@@ -209,7 +209,7 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      PGPASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_2025}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en .env}
       POSTGRES_DB: ${POSTGRES_DB:-psicologa_db}
       POSTGRES_USER: ${POSTGRES_USER:-psicologa_user}
       BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}

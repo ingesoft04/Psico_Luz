@@ -3,7 +3,6 @@ const { validationResult } = require('express-validator');
 const db       = require('../config/database');
 const redis    = require('../config/redis');
 const AppError = require('../utils/AppError');
-const { citaQueue } = require('../jobs/queues');
 const { listCacheKey, addMinutes } = require('../utils/citas');
 const automation = require('../services/appointmentAutomationService');
 

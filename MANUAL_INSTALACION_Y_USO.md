@@ -91,6 +91,8 @@ MAINTENANCE_PASSWORD=clave_segura_para_mantenimiento
 
 Cada secreto debe ser diferente. No utilice los valores de ejemplo en producción.
 
+La plataforma valida esta configuración antes de conectarse a los servicios. En producción no arrancará si falta un secreto obligatorio, si es demasiado corto, si coincide con un valor público conocido o si se reutiliza en más de un servicio. Genere valores aleatorios; por ejemplo, con `openssl rand -base64 48`.
+
 ### 4.2 Iniciar la plataforma
 
 ```powershell
@@ -429,6 +431,8 @@ docker compose ps
 - Use HTTPS en producción.
 - Utilice contraseñas únicas y autenticación multifactor en correo, dominio y servidor.
 - Restrinja pgAdmin, Redis Commander y N8N mediante VPN o firewall.
+- Los puertos de pgAdmin, Redis Commander y N8N se enlazan únicamente a `127.0.0.1` de manera predeterminada. Utilice un túnel SSH o una VPN; no cambie ese enlace a `0.0.0.0` en Internet.
+- No almacene PDFs, capturas, respaldos ni exportaciones clínicas dentro del repositorio, incluso si se encuentra en modo privado.
 - Realice respaldos cifrados y pruebe su restauración.
 - Revise periódicamente accesos clínicos y cambios administrativos.
 - No envíe documentos clínicos sin autorización y verificación del destinatario.
