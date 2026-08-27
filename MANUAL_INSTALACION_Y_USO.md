@@ -93,6 +93,16 @@ Cada secreto debe ser diferente. No utilice los valores de ejemplo en producció
 
 La plataforma valida esta configuración antes de conectarse a los servicios. En producción no arrancará si falta un secreto obligatorio, si es demasiado corto, si coincide con un valor público conocido o si se reutiliza en más de un servicio. Genere valores aleatorios; por ejemplo, con `openssl rand -base64 48`.
 
+Si la aplicación se publica bajo una subruta, configure las URLs completas y el prefijo sin barra final:
+
+```dotenv
+APP_URL=https://dev-fmv.duckdns.org/psicologia
+FRONTEND_URL=https://dev-fmv.duckdns.org/psicologia
+PUBLIC_BASE_PATH=/psicologia
+```
+
+El frontend deriva sus rutas desde la URL actual, por lo que también continúa funcionando cuando se sirve directamente desde `/`.
+
 ### 4.2 Iniciar la plataforma
 
 ```powershell

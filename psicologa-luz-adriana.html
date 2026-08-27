@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Psicóloga Luz Adriana — Tu Camino Hacia el Equilibrio</title>
 <meta name="theme-color" content="#247b6f">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -566,7 +566,7 @@ footer{
     <a href="#proceso">🗺️ Proceso</a>
     <a href="#metodos">🧠 Métodos</a>
     <a href="#testimonios">⭐ Voces</a>
-    <a href="/agenda.html" target="_blank" rel="noopener" class="cta-nav">📅 Ver agenda disponible</a>
+    <a href="./agenda.html" target="_blank" rel="noopener" class="cta-nav">📅 Ver agenda disponible</a>
   </div>
 </nav>
 
@@ -592,7 +592,7 @@ footer{
     <div class="hero-logo-grande">
       <div class="hero-logo-circulo">
         <div class="logo-img-container">
-          <img src="/icon.svg" alt="Identidad visual de Psicóloga Luz Adriana" width="220" height="220">
+          <img src="./icon.svg" alt="Identidad visual de Psicóloga Luz Adriana" width="220" height="220">
           <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:7rem;">🧠❤️</div>
         </div>
         <div class="mariposa">🦋</div>
@@ -612,7 +612,7 @@ footer{
         <span class="hero-badge">📍 Nivel Nacional</span>
         <span class="hero-badge">💻 Virtual y presencial</span>
       </div>
-      <a href="/agenda.html" target="_blank" rel="noopener" class="btn-hero">📅 Ver citas disponibles</a>
+      <a href="./agenda.html" target="_blank" rel="noopener" class="btn-hero">📅 Ver citas disponibles</a>
       <a href="#historia" class="btn-hero-2">Conocerme →</a>
     </div>
   </div>
@@ -792,7 +792,7 @@ footer{
     <div class="tabs-wrap">
       <div class="tabs">
         <button class="tab-btn activo" onclick="cambiarTab('registro',this)">👤 Crear mi cuenta</button>
-        <button class="tab-btn" onclick="window.open('/agenda.html','agendaLuz','noopener,width=1180,height=820')">📅 Abrir agenda en nueva ventana ↗</button>
+        <button class="tab-btn" onclick="window.open('./agenda.html','agendaLuz','noopener,width=1180,height=820')">📅 Abrir agenda en nueva ventana ↗</button>
       </div>
 
       <!-- REGISTRO -->
@@ -976,7 +976,7 @@ footer{
       <a href="#proceso">🗺️ Cómo funciona</a>
       <a href="#metodos">🧠 Mis métodos</a>
       <a href="#testimonios">⭐ Testimonios</a>
-      <a href="/agenda.html" target="_blank" rel="noopener">📅 Agendar cita</a>
+      <a href="./agenda.html" target="_blank" rel="noopener">📅 Agendar cita</a>
     </div>
     <div class="footer-col">
       <h4>Contacto</h4>
@@ -994,6 +994,8 @@ footer{
 </footer>
 
 <script>
+const APP_BASE=location.pathname.replace(/\/(?:agenda|panel|sesion-clinica)\.html$/,'').replace(/\/$/,'');
+const appUrl=path=>`${APP_BASE}/${String(path||'').replace(/^\/+/, '')}`;
 // Tabs
 function cambiarTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
@@ -1012,7 +1014,7 @@ function registrar() {
     alert('🌿 Por favor completa todos los campos obligatorios para crear tu cuenta.');
     return;
   }
-  window.open('/agenda.html', 'agendaLuz', 'noopener,width=1180,height=820');
+  window.open(appUrl('agenda.html'), 'agendaLuz', 'noopener,width=1180,height=820');
 }
 
 // Cita
@@ -1026,7 +1028,7 @@ function agendarCita() {
     alert('📅 Por favor completa tu nombre, fecha, hora, modalidad y teléfono.');
     return;
   }
-  window.open('/agenda.html', 'agendaLuz', 'noopener,width=1180,height=820');
+  window.open(appUrl('agenda.html'), 'agendaLuz', 'noopener,width=1180,height=820');
 }
 
 // Fecha mínima = hoy
@@ -1037,7 +1039,7 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register(appUrl('sw.js'),{scope:appUrl('')});
 </script>
 <style>
 .bot-open{position:fixed;right:22px;bottom:22px;z-index:50;border:0;border-radius:50px;background:#247b6f;color:#fff;padding:14px 19px;font-weight:800;box-shadow:0 12px 35px #173d3855}
@@ -1047,7 +1049,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 <button class="bot-open" id="bot-open" aria-controls="bot-box">💬 Asistente</button>
 <section class="bot-box" id="bot-box" hidden><div class="bot-head">Asistente virtual · 24/7</div><div class="bot-log" id="bot-log"><div class="bot-msg">Hola. Puedo ayudarte con citas, horarios, ubicación y sesiones virtuales.</div></div><form class="bot-form" id="bot-form"><input id="bot-input" maxlength="500" placeholder="Escribe tu pregunta…" required><button>Enviar</button></form></section>
 <script>
-(()=>{const box=document.getElementById('bot-box'),log=document.getElementById('bot-log'),input=document.getElementById('bot-input');let session=localStorage.getItem('botSession')||crypto.randomUUID();localStorage.setItem('botSession',session);document.getElementById('bot-open').onclick=()=>box.hidden=!box.hidden;document.getElementById('bot-form').onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;log.insertAdjacentHTML('beforeend',`<div class="bot-msg me"></div>`);log.lastElementChild.textContent=text;input.value='';try{const r=await fetch('/api/v1/webhooks/asistente-web',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mensaje:text,sessionId:session})}),d=await r.json();log.insertAdjacentHTML('beforeend','<div class="bot-msg"></div>');log.lastElementChild.textContent=d.data?.respuesta||d.message||'No pude responder en este momento.'}catch{log.insertAdjacentHTML('beforeend','<div class="bot-msg">No hay conexión. Intenta nuevamente.</div>')}log.scrollTop=log.scrollHeight}})();
+(()=>{const box=document.getElementById('bot-box'),log=document.getElementById('bot-log'),input=document.getElementById('bot-input');let session=localStorage.getItem('botSession')||crypto.randomUUID();localStorage.setItem('botSession',session);document.getElementById('bot-open').onclick=()=>box.hidden=!box.hidden;document.getElementById('bot-form').onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;log.insertAdjacentHTML('beforeend',`<div class="bot-msg me"></div>`);log.lastElementChild.textContent=text;input.value='';try{const r=await fetch(appUrl('api/v1/webhooks/asistente-web'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mensaje:text,sessionId:session})}),d=await r.json();log.insertAdjacentHTML('beforeend','<div class="bot-msg"></div>');log.lastElementChild.textContent=d.data?.respuesta||d.message||'No pude responder en este momento.'}catch{log.insertAdjacentHTML('beforeend','<div class="bot-msg">No hay conexión. Intenta nuevamente.</div>')}log.scrollTop=log.scrollHeight}})();
 </script>
 </body>
 </html>

@@ -28,6 +28,16 @@ const waitlistRoutes     = require('./routes/waitlist');
 
 const app = express();
 
+const normalizeOrigin = value => {
+  try { return new URL(value).origin; } catch { return null; }
+};
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost',
+  process.env.APP_URL || 'http://localhost',
+  'http://localhost:3000',
+  'http://localhost:5678',
+].map(normalizeOrigin).filter(Boolean);
+
 // Nginx es el único proxy frontal del contenedor. Permite obtener la IP real
 // para auditoría y rate limiting sin confiar en cadenas arbitrarias de proxies.
 app.set('trust proxy', 1);
@@ -43,12 +53,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost',
-    process.env.APP_URL || 'http://localhost',
-    'http://localhost:3000',  // dev frontend
-    'http://localhost:5678',  // N8N
-  ].filter(Boolean),
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-N8N-Signature', 'X-Telegram-Bot-Api-Secret-Token', 'X-Payment-Signature']

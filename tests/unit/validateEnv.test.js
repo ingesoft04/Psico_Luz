@@ -11,6 +11,9 @@ const secureEnv = () => ({
   PSYCHOLOGIST_PASSWORD: 'Psychologist-E-2026!',
   MAINTENANCE_PASSWORD: 'Maintenance-F-2026!',
   CLINICAL_SIGNING_SECRET: 'clinical-signing-G-unique-000000',
+  APP_URL: 'https://dev-fmv.duckdns.org/psicologia',
+  FRONTEND_URL: 'https://dev-fmv.duckdns.org/psicologia',
+  PUBLIC_BASE_PATH: '/psicologia',
   PSYCHOLOGIST_EMAIL: 'psychologist@example.test',
   MAINTENANCE_EMAIL: 'maintenance@example.test',
 });
@@ -34,4 +37,11 @@ test('rechaza la reutilización de secretos', () => {
 
 test('no bloquea el entorno de desarrollo', () => {
   assert.equal(validateEnvironment({ NODE_ENV: 'development' }), true);
+});
+
+test('rechaza URLs sin HTTPS y subrutas ambiguas en producción', () => {
+  const env = secureEnv();
+  env.APP_URL = 'http://dev-fmv.duckdns.org/psicologia';
+  env.PUBLIC_BASE_PATH = 'psicologia/';
+  assert.throws(() => validateEnvironment(env), /HTTPS|PUBLIC_BASE_PATH/);
 });

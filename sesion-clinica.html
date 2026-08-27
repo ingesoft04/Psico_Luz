@@ -48,10 +48,10 @@
 <script>
 // La nueva pestaña hereda sessionStorage de su ventana de origen. Una vez
 // copiada la autenticación, se corta la referencia para evitar tabnabbing.
-const API='/api/v1',token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),updates='BroadcastChannel' in window?new BroadcastChannel('clinical-session-updates'):null;
+const APP_BASE=location.pathname.replace(/\/(?:agenda|panel|sesion-clinica)\.html$/,'').replace(/\/$/,'');const appUrl=path=>`${APP_BASE}/${String(path||'').replace(/^\/+/, '')}`;const API=appUrl('api/v1'),token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),updates='BroadcastChannel' in window?new BroadcastChannel('clinical-session-updates'):null;
 if(window.opener)window.opener=null;
 const $=id=>document.getElementById(id),citaId=new URLSearchParams(location.search).get('cita');let context,noteId;
-if(!token||user?.rol!=='psicologa'||!citaId)location.replace('/panel.html');
+if(!token||user?.rol!=='psicologa'||!citaId)location.replace(appUrl('panel.html'));
 async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.message||'No se pudo completar');return d}
 function notify(text,error=false){$('message').textContent=text;$('message').className='message '+(error?'error':'ok')}
 function announceUpdate(){updates?.postMessage({type:'clinical-note-updated',citaId})}

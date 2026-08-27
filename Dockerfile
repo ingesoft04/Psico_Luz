@@ -3,22 +3,15 @@
 # ║  Multi-stage: deps → build → production                 ║
 # ╚══════════════════════════════════════════════════════════╝
 
-# ─── Stage 1: Dependencias ────────────────────────────────────
-FROM node:20-alpine AS deps
+# ─── Stage 1: Dependencias reproducibles ─────────────────────
+FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --omit=dev --no-audit --no-fund && cp -R node_modules /tmp/prod_modules
-RUN npm install --no-audit --no-fund
-
-# ─── Stage 2: Build ───────────────────────────────────────────
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build 2>/dev/null || echo "No build step needed"
+RUN corepack enable && corepack prepare pnpm@11.19.0 --activate
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # ─── Stage 3: Producción ──────────────────────────────────────
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 LABEL maintainer="Psicóloga Luz Adriana <tech@psicologa.co>"
 LABEL version="1.0.0"
 LABEL description="Backend API — Psicóloga Luz Adriana"
@@ -30,7 +23,7 @@ RUN addgroup -g 1001 -S nodejs && \
 WORKDIR /app
 
 # Solo dependencias de producción
-COPY --from=deps /tmp/prod_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 COPY --chown=nodeuser:nodejs . .
 
 # Directorios necesarios

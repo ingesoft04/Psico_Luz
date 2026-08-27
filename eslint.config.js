@@ -19,6 +19,7 @@ module.exports = [
         process: 'readonly',
         require: 'readonly',
         setTimeout: 'readonly',
+        URL: 'readonly',
         URLSearchParams: 'readonly',
       },
     },
