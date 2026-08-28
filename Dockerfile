@@ -4,14 +4,14 @@
 # ╚══════════════════════════════════════════════════════════╝
 
 # ─── Stage 1: Dependencias reproducibles ─────────────────────
-FROM node:22-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@11.19.0 --activate
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # ─── Stage 3: Producción ──────────────────────────────────────
-FROM node:22-alpine AS production
+FROM node:25-alpine AS production
 LABEL maintainer="Psicóloga Luz Adriana <tech@psicologa.co>"
 LABEL version="1.0.0"
 LABEL description="Backend API — Psicóloga Luz Adriana"
