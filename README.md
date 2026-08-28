@@ -4,8 +4,9 @@
 
 ## Manual completo
 
-Consulte [MANUAL_INSTALACION_Y_USO.md](MANUAL_INSTALACION_Y_USO.md) para instalación en
-Windows/Linux, configuración de `.env`, SMTP, dominio, HTTPS, operación por roles,
+Consulte [MANUAL_INSTALACION_Y_USO.md](MANUAL_INSTALACION_Y_USO.md) para elegir entre
+Docker, [Windows con IIS](docs/INSTALACION_WINDOWS_IIS.md) o
+[Linux nativo](docs/INSTALACION_LINUX_NATIVO.md), y configurar `.env`, SMTP, dominio, HTTPS, operación por roles,
 documentos clínicos, respaldos, restauración, actualización y diagnóstico.
 
 ---

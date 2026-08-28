@@ -3,7 +3,7 @@
 ## Psicóloga Luz Adriana
 
 Versión del manual: 1.0  
-Plataforma: Windows o Linux con Docker  
+Plataformas: Windows con IIS, Linux nativo o Windows/Linux con Docker
 Componentes: Nginx, Node.js, PostgreSQL, Redis, agenda, panel clínico y panel de mantenimiento.
 
 ---
@@ -62,9 +62,21 @@ Psico_Luz/
 └── backups/
 ```
 
-## 4. Instalación local
+## 4. Elegir modalidad de instalación
 
-### 4.1 Preparar la configuración
+No mezcle comandos ni archivos de servicio entre modalidades:
+
+| Modalidad | Publicación | Procesos y datos | Manual |
+|---|---|---|---|
+| Docker en Windows o Linux | Nginx del contenedor | Compose administra Node.js, PostgreSQL y Redis | Secciones 4.1 a 4.3 de este documento |
+| Windows Server con IIS | IIS + ARR + URL Rewrite | Servicios instalados en Windows | [Instalación en Windows con IIS](docs/INSTALACION_WINDOWS_IIS.md) |
+| Ubuntu/Linux nativo | Nginx del sistema | systemd administra Node.js, PostgreSQL y Redis | [Instalación nativa en Linux](docs/INSTALACION_LINUX_NATIVO.md) |
+
+Docker es la modalidad recomendada para producción porque reproduce el entorno
+validado por CI. IIS y Linux nativo se ofrecen para servidores que no puedan usar
+Compose.
+
+### 4.1 Docker: preparar la configuración
 
 Desde PowerShell:
 
@@ -93,7 +105,17 @@ Cada secreto debe ser diferente. No utilice los valores de ejemplo en producció
 
 La plataforma valida esta configuración antes de conectarse a los servicios. En producción no arrancará si falta un secreto obligatorio, si es demasiado corto, si coincide con un valor público conocido o si se reutiliza en más de un servicio. Genere valores aleatorios; por ejemplo, con `openssl rand -base64 48`.
 
-### 4.2 Iniciar la plataforma
+Si la aplicación se publica bajo una subruta, configure las URLs completas y el prefijo sin barra final:
+
+```dotenv
+APP_URL=https://dev-fmv.duckdns.org/psicologia
+FRONTEND_URL=https://dev-fmv.duckdns.org/psicologia
+PUBLIC_BASE_PATH=/psicologia
+```
+
+El frontend deriva sus rutas desde la URL actual, por lo que también continúa funcionando cuando se sirve directamente desde `/`.
+
+### 4.2 Docker: iniciar la plataforma
 
 ```powershell
 docker compose up -d --build
@@ -108,7 +130,7 @@ Invoke-WebRequest http://localhost:8180/health
 
 El resultado de salud debe indicar PostgreSQL y Redis en estado `ok`.
 
-### 4.3 Direcciones locales
+### 4.3 Docker: direcciones locales
 
 | Función | Dirección |
 |---|---|

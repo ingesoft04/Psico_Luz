@@ -5,7 +5,7 @@ button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visi
 <section class="login" id="login"><h1>Panel operativo</h1><p>Acceso exclusivo para psicóloga y mantenimiento.</p><label>Correo<input id="email" type="email"></label><label>Contraseña<input id="password" type="password"></label><div class="msg" id="msg"></div><button class="btn" id="login-btn">Ingresar</button></section>
 <div class="app hidden" id="app"><aside class="side"><div class="brand">🧠 Psicóloga Luz Adriana</div><div class="role" id="role"></div><nav class="nav" id="nav"></nav><button class="logout" id="logout">Cerrar sesión</button></aside><main class="main"><header class="top"><div><h1 id="title">Panel</h1><p id="subtitle"></p></div><span id="identity"></span></header><div id="content"></div></main></div>
 <script>
-const API='/api/v1', $=x=>document.getElementById(x),esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));let token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),currentView=null;
+const APP_BASE=location.pathname.replace(/\/(?:agenda|panel|sesion-clinica)\.html$/,'').replace(/\/$/,'');const appUrl=path=>`${APP_BASE}/${String(path||'').replace(/^\/+/, '')}`;const API=appUrl('api/v1'), $=x=>document.getElementById(x),esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));let token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),currentView=null;
 async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.message||'No se pudo completar');return d}
 async function login(){try{const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('email').value,password:$('password').value})}),d=await r.json();if(!r.ok)throw Error(d.message);if(!['superadmin','psicologa'].includes(d.data.user.rol))throw Error('Esta cuenta no tiene acceso operativo');token=d.data.accessToken;user=d.data.user;sessionStorage.setItem('opsToken',token);sessionStorage.setItem('opsUser',JSON.stringify(user));start()}catch(e){$('msg').textContent=e.message}}
 const viewsPsych=[['Resumen','summary'],['Agenda','agenda'],['Pacientes','patients'],['Horarios','schedule'],['Accesos clínicos','access']];
@@ -29,7 +29,7 @@ function clinicalNote(citaId){
   try{
     clinicalWindow.sessionStorage.setItem('opsToken',token);
     clinicalWindow.sessionStorage.setItem('opsUser',JSON.stringify(user));
-    clinicalWindow.location.replace(`/sesion-clinica.html?cita=${encodeURIComponent(citaId)}`);
+    clinicalWindow.location.replace(`${appUrl('sesion-clinica.html')}?cita=${encodeURIComponent(citaId)}`);
   }catch(_error){clinicalWindow.close();alert('No fue posible abrir el registro clínico de forma segura. Intente nuevamente.')}
 }
 if('BroadcastChannel' in window){const clinicalUpdates=new BroadcastChannel('clinical-session-updates');clinicalUpdates.onmessage=e=>{if(e.data?.type==='clinical-note-updated'&&currentView==='agenda')load('agenda')}}

@@ -48,6 +48,20 @@ function validateEnvironment(env = process.env) {
     errors.push('PSYCHOLOGIST_EMAIL y MAINTENANCE_EMAIL deben ser diferentes');
   }
 
+  for (const name of ['APP_URL', 'FRONTEND_URL']) {
+    try {
+      const url = new URL(env[name]);
+      if (url.protocol !== 'https:') errors.push(`${name} debe usar HTTPS en producción`);
+    } catch {
+      errors.push(`${name} debe ser una URL válida en producción`);
+    }
+  }
+
+  const basePath = String(env.PUBLIC_BASE_PATH || '').trim();
+  if (basePath && (!basePath.startsWith('/') || basePath.endsWith('/'))) {
+    errors.push('PUBLIC_BASE_PATH debe estar vacío o usar el formato /subruta sin barra final');
+  }
+
   if (errors.length) {
     throw new Error(`Configuración insegura de producción:\n- ${[...new Set(errors)].join('\n- ')}`);
   }
