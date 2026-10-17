@@ -39,7 +39,7 @@
     "@anthropic-ai/sdk":     "^0.32.1",
     "@google/generative-ai": "^0.21.0",
     "dotenv":                "^16.4.5",
-    "compression":           "^1.7.4",
+    "compression":           "^1.8.2",
     "express-async-errors":  "^3.1.1",
     "uuid":                  "^11.1.1",
     "dayjs":                 "^1.11.13",
