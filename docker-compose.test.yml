@@ -2,9 +2,9 @@
 # docker compose -p psico_luz_test -f docker-compose.yml -f docker-compose.test.yml up -d --build
 services:
   postgres:
-    # Digest probado en producción; evita que una etiqueta móvil introduzca
-    # cambios de ICU/initdb sin pasar primero por revisión.
-    image: postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+    # Variante Debian verificada con initdb limpio. Se fija el digest para que
+    # cambios del motor no entren en test sin revisión.
+    image: postgres@sha256:e8a07d2c7579b038938cdba6c539e580e5001caf9ea203d397b5cc83e76bd938
     container_name: psicologa_test_postgres
 
   redis:
