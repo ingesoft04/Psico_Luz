@@ -26,6 +26,9 @@ services:
       GOOGLE_SERVICE_ACCOUNT_JSON: ""
       ANTHROPIC_API_KEY: ""
       GEMINI_API_KEY: ""
+    volumes:
+      - test_logs:/app/logs
+      - test_uploads:/app/uploads
 
   nginx:
     container_name: psicologa_test_nginx
@@ -36,3 +39,7 @@ networks:
     ipam:
       config:
         - subnet: 172.29.0.0/16
+
+volumes:
+  test_logs:
+  test_uploads:

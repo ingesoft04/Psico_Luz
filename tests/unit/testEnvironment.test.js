@@ -15,6 +15,8 @@ test('el entorno test usa contenedores y red independientes', () => {
   assert.match(compose, /image: postgres@sha256:[a-f0-9]{64}/);
   assert.match(compose, /name: psico_luz_test_net/);
   assert.match(compose, /subnet: 172\.29\.0\.0\/16/);
+  assert.match(compose, /test_logs:\/app\/logs/);
+  assert.match(compose, /test_uploads:\/app\/uploads/);
   assert.doesNotMatch(compose, /container_name: psicologa_(?:postgres|redis|api|nginx)\s*$/m);
 });
 
