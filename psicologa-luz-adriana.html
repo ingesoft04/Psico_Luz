@@ -547,9 +547,11 @@ footer{
   .nav-logo{margin:auto}.nav-links a:not(.cta-nav){display:none}.nav-links .cta-nav{width:100%;text-align:center}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.test-environment-banner{position:sticky;top:0;z-index:9999;padding:10px 16px;text-align:center;background:#7c2d12;color:#fff;border-bottom:3px solid #fdba74;font:700 14px/1.4 system-ui,sans-serif;letter-spacing:.01em}
 </style>
 </head>
 <body>
+<div class="test-environment-banner" id="test-environment-banner" role="status" hidden><strong>Entorno de prueba · Los cambios aquí aún no están en producción</strong></div>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 <!-- ════ NAV ════ -->
@@ -994,6 +996,7 @@ footer{
 </footer>
 
 <script>
+const IS_TEST_ENVIRONMENT=location.hostname.startsWith('test-');if(IS_TEST_ENVIRONMENT)document.getElementById('test-environment-banner').hidden=false;
 const APP_BASE=location.pathname.replace(/\/(?:agenda|panel|sesion-clinica)\.html$/,'').replace(/\/$/,'');
 const appUrl=path=>`${APP_BASE}/${String(path||'').replace(/^\/+/, '')}`;
 // Tabs

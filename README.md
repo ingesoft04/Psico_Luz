@@ -9,6 +9,10 @@ Docker, [Windows con IIS](docs/INSTALACION_WINDOWS_IIS.md) o
 [Linux nativo](docs/INSTALACION_LINUX_NATIVO.md), y configurar `.env`, SMTP, dominio, HTTPS, operación por roles,
 documentos clínicos, respaldos, restauración, actualización y diagnóstico.
 
+Los cambios deben validarse primero en
+[test-psicologia.dev-fmv.duckdns.org](https://test-psicologia.dev-fmv.duckdns.org/)
+siguiendo el [flujo obligatorio de test a producción](docs/FLUJO_TEST_PRODUCCION.md).
+
 ---
 
 ## 🏗️ Arquitectura

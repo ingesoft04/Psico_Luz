@@ -1,0 +1,35 @@
+# Entorno aislado de validación. Debe combinarse con docker-compose.yml:
+# docker compose -p psico_luz_test -f docker-compose.yml -f docker-compose.test.yml up -d --build
+services:
+  postgres:
+    container_name: psicologa_test_postgres
+
+  redis:
+    container_name: psicologa_test_redis
+
+  api:
+    image: psico_luz_test-api:latest
+    container_name: psicologa_test_api
+    environment:
+      # Las integraciones capaces de producir efectos externos permanecen
+      # deshabilitadas en test, aunque existan valores en otro entorno.
+      SMTP_HOST: ""
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      TWILIO_ACCOUNT_SID: ""
+      TWILIO_AUTH_TOKEN: ""
+      TELEGRAM_BOT_TOKEN: ""
+      GOOGLE_CALENDAR_ID: ""
+      GOOGLE_SERVICE_ACCOUNT_JSON: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+  nginx:
+    container_name: psicologa_test_nginx
+
+networks:
+  psicologa_net:
+    name: psico_luz_test_net
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
