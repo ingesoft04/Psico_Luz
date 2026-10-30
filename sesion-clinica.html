@@ -14,10 +14,11 @@
     label{display:grid;gap:7px;font-weight:800}.wide{grid-column:1/-1}textarea,input{font:inherit;width:100%;border:1px solid #cbdad5;border-radius:12px;padding:12px;background:#fff;color:var(--dark)}
     textarea{min-height:135px;resize:vertical}.short textarea{min-height:90px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:850;cursor:pointer;background:var(--green);color:#fff}.btn.secondary{background:#fff;color:var(--green);border:1px solid var(--green)}.btn.danger{background:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}
     .message{min-height:24px;margin-top:14px;font-weight:750}.ok{color:#16835e}.error{color:var(--red)}.hidden{display:none}@media(max-width:700px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.header{align-items:flex-start;flex-direction:column}}
-    button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #d3a84b;outline-offset:3px}.card{border-top:5px solid var(--green)}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+    button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #d3a84b;outline-offset:3px}.card{border-top:5px solid var(--green)}.test-environment-banner{position:sticky;top:0;z-index:9999;padding:10px 16px;text-align:center;background:#7c2d12;color:#fff;border-bottom:3px solid #fdba74;font:700 14px/1.4 system-ui,sans-serif;letter-spacing:.01em}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
+<div class="test-environment-banner" id="test-environment-banner" role="status" hidden><strong>Entorno de prueba · Los cambios aquí aún no están en producción</strong></div>
 <main>
   <section class="header">
     <div><h1>Registro de sesión clínica</h1><div class="meta" id="session-meta">Cargando información protegida…</div></div>
@@ -48,6 +49,7 @@
 <script>
 // La nueva pestaña hereda sessionStorage de su ventana de origen. Una vez
 // copiada la autenticación, se corta la referencia para evitar tabnabbing.
+const IS_TEST_ENVIRONMENT=location.hostname.startsWith('test-');if(IS_TEST_ENVIRONMENT)document.getElementById('test-environment-banner').hidden=false;
 const APP_BASE=location.pathname.replace(/\/(?:agenda|panel|sesion-clinica)\.html$/,'').replace(/\/$/,'');const appUrl=path=>`${APP_BASE}/${String(path||'').replace(/^\/+/, '')}`;const API=appUrl('api/v1'),token=sessionStorage.getItem('opsToken'),user=JSON.parse(sessionStorage.getItem('opsUser')||'null'),updates='BroadcastChannel' in window?new BroadcastChannel('clinical-session-updates'):null;
 if(window.opener)window.opener=null;
 const $=id=>document.getElementById(id),citaId=new URLSearchParams(location.search).get('cita');let context,noteId;

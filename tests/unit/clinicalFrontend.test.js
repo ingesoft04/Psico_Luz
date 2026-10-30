@@ -53,3 +53,13 @@ test('la navegación pública no escapa a la raíz del dominio', () => {
   }
   assert.doesNotMatch(homepage, /window\.open\('\/agenda\.html/);
 });
+
+test('muestra la advertencia únicamente en hosts de test', () => {
+  const message = 'Entorno de prueba · Los cambios aquí aún no están en producción';
+  for (const document of [homepage, agenda, panel, session]) {
+    assert.match(document, new RegExp(message));
+    assert.match(document, /location\.hostname\.startsWith\('test-'\)/);
+    assert.match(document, /test-environment-banner[^>]*hidden/);
+    assert.match(document, /if\(IS_TEST_ENVIRONMENT\).*\.hidden=false/);
+  }
+});
