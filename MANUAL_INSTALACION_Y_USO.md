@@ -2,7 +2,7 @@
 
 ## Psicóloga Luz Adriana
 
-Versión del manual: 1.0  
+Versión del manual: 1.1
 Plataformas: Windows con IIS, Linux nativo o Windows/Linux con Docker
 Componentes: Nginx, Node.js, PostgreSQL, Redis, agenda, panel clínico y panel de mantenimiento.
 
@@ -22,6 +22,11 @@ Este manual explica cómo instalar, configurar, operar, respaldar y actualizar l
 
 La configuración de Google Calendar, WhatsApp, Telegram y el asistente web está detallada
 en [AUTOMATIZACION.md](AUTOMATIZACION.md).
+
+Los cambios destinados a una instalación productiva deben probarse primero en
+un entorno aislado. La arquitectura implantada, las URLs, los respaldos, la
+lista de validación y el procedimiento de promoción se documentan en
+[Entorno de prueba y promoción a producción](docs/FLUJO_TEST_PRODUCCION.md).
 
 ## 2. Requisitos
 

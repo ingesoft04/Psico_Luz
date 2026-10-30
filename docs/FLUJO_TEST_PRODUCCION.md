@@ -1,31 +1,96 @@
-# Flujo obligatorio de test a producción
+# Entorno de prueba y promoción a producción
 
-Toda modificación debe pasar por el entorno aislado antes de llegar a producción.
+Última actualización: 30 de octubre de 2026.
 
-| Entorno | URL | Datos | Contenedores |
-|---|---|---|---|
-| Test | `https://test-psicologia.dev-fmv.duckdns.org/` | Base vacía y volúmenes exclusivos | `psicologa_test_*` |
-| Producción | `https://psicologia.dev-fmv.duckdns.org/` | Datos reales | `psicologa_*` |
+Toda modificación debe validarse en el entorno aislado antes de llegar a
+producción. La existencia del entorno de prueba no autoriza una fusión: el PR
+se fusiona únicamente después de la revisión y aprobación explícita del
+responsable.
 
-Test no reutiliza la base, Redis, secretos, cuentas, logs, uploads, red ni imagen
-de producción. Las integraciones de correo, mensajería, calendario e IA están
-deshabilitadas para evitar efectos externos.
+## Entornos publicados
 
-## 1. Preparar un cambio
+| Entorno | URL | Puerto local en la VM | Datos | Contenedores |
+|---|---|---:|---|---|
+| Prueba | `https://test-psicologia.dev-fmv.duckdns.org/` | `127.0.0.1:8280` | Base y volúmenes exclusivos | `psicologa_test_*` |
+| Producción | `https://psicologia.dev-fmv.duckdns.org/` | `8180` | Datos reales | `psicologa_*` |
+
+Ambos dominios terminan TLS en el proxy inverso de la VM Ubuntu. El proxy sólo
+publica el Nginx de cada entorno; PostgreSQL, Redis y la API no se exponen
+directamente a Internet.
+
+Las páginas de prueba muestran arriba y sólo cuando el host comienza por
+`test-` el aviso:
+
+> **Entorno de prueba · Los cambios aquí aún no están en producción**
+
+El aviso está incluido en la página principal, agenda, panel y sesión clínica.
+Producción no debe mostrarlo.
+
+## Aislamiento implementado
+
+El despliegue se define en `docker-compose.test.yml`, combinado con
+`docker-compose.yml` y el nombre de proyecto fijo `psico_luz_test`.
+
+- Red exclusiva `psico_luz_test_net`, subred `172.29.0.0/16`.
+- Base `psicologa_test` con usuario y contraseña exclusivos.
+- PostgreSQL fijado por digest a una imagen Debian verificada.
+- Redis, logs y uploads en volúmenes exclusivos de prueba.
+- Contenedores `psicologa_test_postgres`, `psicologa_test_redis`,
+  `psicologa_test_api` y `psicologa_test_nginx`.
+- Secretos de prueba aleatorios y diferentes de producción.
+- Correo, Twilio, Telegram, Google Calendar, Claude y Gemini deshabilitados.
+- Respuestas con `Cache-Control: no-store, private` y
+  `X-Robots-Tag: noindex, nofollow, noarchive`.
+
+Test no reutiliza la base, dumps, `.env`, cuentas, secretos, logs, uploads, red
+ni volúmenes de producción.
+
+## Ubicación en la VM Ubuntu
+
+| Recurso | Ruta |
+|---|---|
+| Aplicación de prueba | `/home/fmv/apps/Psico_Luz-test` |
+| Variables privadas | `/home/fmv/apps/Psico_Luz-test/.env` |
+| Credenciales de prueba | `/home/fmv/apps/Psico_Luz-test/TEST_CREDENTIALS` |
+| Respaldo inicial | `/home/fmv/backups/psico-luz-test-20261029T183031Z` |
+| Respaldo de dependencias | `/home/fmv/backups/psico-luz-test-deps-20261029T183700Z` |
+
+Los archivos con secretos deben conservar permisos `0600`. No muestre sus
+valores en logs, incidencias, commits ni capturas.
+
+## Preparar un cambio
 
 1. Ejecute `git fetch origin --prune`.
-2. Confirme que la rama parte del `main` remoto actualizado y que el árbol está
-   limpio.
-3. Trabaje en una rama `codex/*`; nunca edite directamente `main`.
-4. Ejecute lint, pruebas unitarias, auditoría de dependencias y construcción de
-   la imagen.
-5. Publique la rama y abra un pull request sin fusionarlo.
+2. Confirme que el árbol está limpio y compare con el upstream:
 
-## 2. Desplegar la rama en test
+   ```bash
+   git status --short --branch
+   git rev-list --left-right --count HEAD...@{upstream}
+   ```
 
-En el directorio test de la VM:
+3. Actualice la rama desde `main` si el remoto avanzó.
+4. Trabaje en una rama; nunca edite directamente `main`.
+5. Ejecute las validaciones:
+
+   ```bash
+   pnpm install --frozen-lockfile
+   pnpm lint
+   pnpm test
+   pnpm audit --prod --audit-level high
+   docker build -t psico-luz-validation .
+   ```
+
+6. Publique la rama y abra un pull request sin fusionarlo.
+7. Espere que todos los controles de GitHub terminen correctamente.
+
+## Desplegar la rama en prueba
+
+Compruebe que los archivos transferidos pertenecen al commit aprobado mediante
+el SHA del commit y hashes SHA-256. Respalde todo archivo que vaya a reemplazar.
 
 ```bash
+cd /home/fmv/apps/Psico_Luz-test
+
 docker compose \
   -p psico_luz_test \
   -f docker-compose.yml \
@@ -39,7 +104,10 @@ docker compose \
   up -d --build
 ```
 
-El `.env` test debe usar como mínimo:
+No omita `-p psico_luz_test`: Compose podría crear volúmenes con otro nombre y
+tratar de reemplazar contenedores equivocados.
+
+El `.env` de prueba debe incluir como mínimo:
 
 ```dotenv
 NODE_ENV=production
@@ -53,36 +121,71 @@ DB_HOST=postgres
 REDIS_HOST=redis
 ```
 
-Todos los secretos deben ser exclusivos de test, aleatorios y distintos entre
-sí. No copie `.env` ni un dump de producción.
+## Validación obligatoria en prueba
 
-## 3. Lista de comprobación en test
-
-- Los cuatro contenedores `psicologa_test_*` están activos y saludables.
-- `/`, `/agenda.html`, `/panel.html`, `/manifest.webmanifest`, `/sw.js`,
-  `/health` y `/api/v1/docs` responden correctamente.
-- Una API protegida responde `401` sin token.
-- CORS permite únicamente el origen test.
+- Los cuatro contenedores `psicologa_test_*` están activos; API, PostgreSQL y
+  Redis aparecen saludables.
+- `/`, `/agenda`, `/panel`, `/manifest.json`, `/sw.js`, `/health` y la
+  documentación de API responden correctamente.
+- `/health` informa `postgres: ok` y `redis: ok`.
+- `/api/v1/auth/me` devuelve `401` sin token.
+- CORS acepta el origen de prueba y rechaza sitios ajenos.
+- El certificado TLS es válido.
+- El aviso aparece con el texto exacto y no aparece en producción.
 - Registro, inicio de sesión, agenda y panel funcionan con cuentas ficticias.
-- No se envían correos, mensajes, eventos de calendario ni solicitudes de IA.
-- Se revisan logs sin errores y se documenta el commit probado.
+- No salen correos, mensajes, eventos de calendario ni solicitudes de IA.
+- Los logs no contienen errores nuevos.
+- Producción continúa respondiendo `200` en `/` y `/health`.
 
-El usuario revisa la URL test. La rama permanece sin fusionar mientras existan
-observaciones.
+El usuario revisa la URL de prueba. La rama permanece sin fusionar mientras
+existan observaciones.
 
-## 4. Promover a producción
+## Promover a producción
 
-Solo después de la autorización explícita del usuario:
+Sólo después de la autorización explícita:
 
-1. Verifique de nuevo que el PR y sus controles estén aprobados y que `main` no
-   haya avanzado inesperadamente.
-2. Fusione el PR y confirme el commit resultante.
-3. Cree y valide un respaldo de PostgreSQL, `.env`, código y configuración.
-4. Etiquete la imagen activa para reversión.
-5. Construya exactamente el commit aprobado.
-6. Despliegue sin copiar datos, secretos ni volúmenes desde test.
-7. Repita las comprobaciones públicas y conserve la URL anterior cuando aplique.
-8. Si falla salud o una prueba crítica, ejecute la reversión inmediatamente.
+1. Ejecute de nuevo `git fetch origin --prune` y confirme que `main`, la rama y
+   el PR no avanzaron inesperadamente.
+2. Muestre el commit, los cambios, los controles y el plan de reversión.
+3. Fusione el PR y registre el SHA resultante en `main`.
+4. Respalde PostgreSQL, `.env`, código y proxy; etiquete la imagen activa.
+5. Construya exactamente el commit fusionado. Nunca copie imágenes, datos,
+   secretos o volúmenes desde prueba.
+6. Despliegue y espere que todos los servicios estén saludables.
+7. Repita las pruebas públicas, funcionales y la revisión de logs.
+8. Si falla una comprobación crítica, revierta imagen y código; restaure datos
+   sólo si una migración los modificó.
 
-Test permanece disponible para el siguiente cambio. Nunca se promueve un volumen
-o base de datos; se promueve únicamente el commit y su imagen reproducible.
+El entorno de prueba permanece disponible para el siguiente cambio.
+
+## Implementación inicial registrada
+
+La implementación se preparó en `codex/test-environment`, PR `#20`, e incluye:
+
+- Entorno aislado y aviso visual condicional.
+- Pruebas automatizadas del aviso y del aislamiento.
+- PostgreSQL reproducible fijado por digest.
+- Logs y uploads en volúmenes administrados exclusivos.
+- Actualización de dependencias y eliminación de dependencias no utilizadas.
+- Auditoría sin vulnerabilidades conocidas, 28 pruebas y lint aprobados, imagen
+  Docker construida y dos controles de seguridad de GitHub aprobados.
+
+El PR debe continuar abierto hasta recibir aprobación explícita para fusionar.
+
+## Diagnóstico y reversión de prueba
+
+```bash
+cd /home/fmv/apps/Psico_Luz-test
+
+docker compose -p psico_luz_test \
+  -f docker-compose.yml -f docker-compose.test.yml ps
+
+docker compose -p psico_luz_test \
+  -f docker-compose.yml -f docker-compose.test.yml logs --tail=200 api nginx
+
+curl -fsS https://test-psicologia.dev-fmv.duckdns.org/health
+```
+
+Para revertir, restaure el respaldo previo, reconstruya la API con el mismo
+nombre de proyecto y repita las comprobaciones. No elimine volúmenes ni restaure
+una base sin identificar antes el contenedor, proyecto y respaldo exactos.

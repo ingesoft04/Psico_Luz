@@ -12,6 +12,11 @@ documentos clínicos, respaldos, restauración, actualización y diagnóstico.
 Los cambios deben validarse primero en
 [test-psicologia.dev-fmv.duckdns.org](https://test-psicologia.dev-fmv.duckdns.org/)
 siguiendo el [flujo obligatorio de test a producción](docs/FLUJO_TEST_PRODUCCION.md).
+Este entorno usa base de datos, Redis, red, secretos, logs y uploads aislados;
+las integraciones externas permanecen deshabilitadas. Las páginas de prueba
+muestran el aviso **“Entorno de prueba · Los cambios aquí aún no están en
+producción”**. Ningún PR se promueve hasta completar las comprobaciones y
+recibir autorización explícita.
 
 ---
 
